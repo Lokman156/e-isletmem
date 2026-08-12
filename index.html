@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İşletmem - İşletme Yönetim Sistemi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #fff;
+            color: #0f172a;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 24px; background: #fff;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky; top: 0; z-index: 100;
+        }
+        nav .logo {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 20px; font-weight: 800; text-decoration: none; color: #0f172a;
+        }
+        nav .logo .icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 15px; flex-shrink: 0;
+        }
+        nav .logo span { color: #10b981; }
+        nav .nav-links { display: flex; gap: 16px; align-items: center; }
+        nav .nav-links a { text-decoration: none; color: #64748b; font-weight: 600; font-size: 13px; transition: color 0.2s; white-space: nowrap; }
+        nav .nav-links a:hover { color: #0f172a; }
+        .hamburger { display: none; background: none; border: none; font-size: 22px; cursor: pointer; color: #0f172a; padding: 4px; }
+        .btn {
+            padding: 10px 18px; border-radius: 10px;
+            font-weight: 700; font-size: 13px; cursor: pointer;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+            transition: all 0.2s; border: none; white-space: nowrap;
+        }
+        .btn-primary { background: #10b981; color: #fff; }
+        .btn-primary:hover { background: #059669; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+        .btn-outline { background: #fff; color: #10b981; border: 2px solid #10b981; }
+        .btn-outline:hover { background: #ecfdf5; }
+        .btn-light { background: #fff; color: #0f172a; border: 1px solid #e2e8f0; }
+        .btn-light:hover { background: #f1f5f9; }
+        .btn-lg { padding: 14px 24px; font-size: 15px; border-radius: 12px; }
+        .mobile-menu {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 200; flex-direction: column; padding: 20px;
+        }
+        .mobile-menu.open { display: flex; }
+        .mobile-menu .m-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+        .mobile-menu .m-links { display: flex; flex-direction: column; gap: 8px; }
+        .mobile-menu .m-links a {
+            padding: 14px 16px; border-radius: 12px;
+            text-decoration: none; color: #0f172a; font-weight: 600; font-size: 15px;
+            background: #f8fafc; text-align: center;
+        }
+        .hero {
+            padding: 80px 24px 60px; text-align: center;
+            background: linear-gradient(180deg, #f0fdf4 0%, #fff 100%);
+        }
+        .hero .hero-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #ecfdf5; color: #10b981;
+            padding: 6px 14px; border-radius: 20px;
+            font-size: 12px; font-weight: 700; margin-bottom: 20px;
+        }
+        .hero h1 { font-size: 44px; font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 16px; }
+        .hero h1 span { color: #10b981; }
+        .hero p { font-size: 16px; color: #64748b; max-width: 550px; margin: 0 auto 28px; }
+        .hero .btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .hero .stats-row { display: flex; gap: 32px; justify-content: center; margin-top: 40px; flex-wrap: wrap; }
+        .hero .stat-item { text-align: center; }
+        .hero .stat-item .num { font-size: 28px; font-weight: 800; color: #10b981; }
+        .hero .stat-item .txt { font-size: 12px; color: #64748b; font-weight: 600; }
+        section { padding: 70px 24px; }
+        section h2 { text-align: center; font-size: 30px; font-weight: 800; margin-bottom: 8px; }
+        section .sub { text-align: center; color: #64748b; margin-bottom: 40px; font-size: 15px; }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1100px; margin: 0 auto;
+        }
+        .feature-card {
+            background: #fff; border: 1px solid #e2e8f0;
+            border-radius: 18px; padding: 28px;
+            transition: all 0.25s;
+        }
+        .feature-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.06); border-color: #d1fae5; }
+        .feature-card .ficon {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; margin-bottom: 16px;
+        }
+        .ficon.green { background: #ecfdf5; color: #10b981; }
+        .ficon.blue { background: #eff6ff; color: #3b82f6; }
+        .ficon.purple { background: #f5f3ff; color: #8b5cf6; }
+        .ficon.orange { background: #fffbeb; color: #f59e0b; }
+        .ficon.red { background: #fef2f2; color: #ef4444; }
+        .ficon.teal { background: #f0fdfa; color: #14b8a6; }
+        .ficon.indigo { background: #eef2ff; color: #6366f1; }
+        .ficon.amber { background: #fffbeb; color: #d97706; }
+        .feature-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+        .feature-card p { font-size: 13px; color: #64748b; line-height: 1.6; }
+        .cta {
+            background: linear-gradient(135deg, #10b981, #059669);
+            padding: 60px 24px; text-align: center; color: #fff;
+        }
+        .cta h2 { font-size: 30px; font-weight: 800; margin-bottom: 10px; }
+        .cta p { font-size: 15px; opacity: 0.9; margin-bottom: 24px; }
+        .faq { max-width: 750px; margin: 0 auto; }
+        .faq-item { border: 1px solid #e2e8f0; border-radius: 14px; margin-bottom: 12px; overflow: hidden; }
+        .faq-q {
+            padding: 18px 22px; font-weight: 700; font-size: 14px;
+            cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            background: #fff; transition: background 0.2s;
+        }
+        .faq-q:hover { background: #f8fafc; }
+        .faq-q i { transition: transform 0.3s; color: #10b981; }
+        .faq-item.open .faq-q i { transform: rotate(180deg); }
+        .faq-a { padding: 0 22px; max-height: 0; overflow: hidden; transition: all 0.3s ease; font-size: 13px; color: #64748b; line-height: 1.7; }
+        .faq-item.open .faq-a { padding: 0 22px 18px; max-height: 200px; }
+        .how-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 24px;
+            max-width: 900px; margin: 0 auto;
+        }
+        .how-card { text-align: center; padding: 20px; }
+        .how-card .step {
+            width: 50px; height: 50px; border-radius: 50%;
+            background: #ecfdf5; color: #10b981;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; font-weight: 800; margin: 0 auto 14px;
+        }
+        .how-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+        .how-card p { font-size: 12px; color: #64748b; }
+        footer {
+            text-align: center; padding: 24px;
+            color: #94a3b8; font-size: 12px;
+            border-top: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+        footer .footer-links { display: flex; gap: 20px; justify-content: center; margin-bottom: 12px; flex-wrap: wrap; }
+        footer .footer-links a { color: #64748b; text-decoration: none; font-size: 12px; }
+        footer .footer-links a:hover { color: #10b981; }
+        @media (max-width: 768px) {
+            nav .nav-links a { display: none; }
+            nav .nav-links .btn-primary { display: inline-flex; }
+            .hamburger { display: block; }
+            .hero { padding: 50px 20px 40px; }
+            .hero h1 { font-size: 30px; }
+            .hero p { font-size: 14px; }
+            .hero .stats-row { gap: 20px; }
+            .hero .stat-item .num { font-size: 22px; }
+            section { padding: 50px 20px; }
+            section h2 { font-size: 24px; }
+            .feature-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .feature-card { padding: 20px; }
+            .cta { padding: 40px 20px; }
+            .cta h2 { font-size: 24px; }
+        }
+        @media (max-width: 480px) {
+            .feature-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 26px; }
+            .hero .btns { flex-direction: column; align-items: center; }
+            .btn-lg { width: 100%; justify-content: center; }
+            .how-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">
+            <div class="icon"><i class="fa-solid fa-shop"></i></div>
+            İşlet<span>mem</span>
+        </a>
+        <div class="nav-links">
+            <a href="#ozellikler">Özellikler</a>
+            <a href="#nasil-calisir">Nasıl Çalışır?</a>
+            <a href="#sss">S.S.S.</a>
+            <a href="login.html" class="btn btn-outline">Giriş</a>
+            <a href="register.html" class="btn btn-primary">Ücretsiz Başla</a>
+        </div>
+        <button class="hamburger" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="m-top">
+            <a href="index.html" class="logo">
+                <div class="icon"><i class="fa-solid fa-shop"></i></div>
+                İşlet<span>mem</span>
+            </a>
+            <button class="hamburger" onclick="toggleMobileMenu()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="m-links">
+            <a href="#ozellikler" onclick="toggleMobileMenu()">Özellikler</a>
+            <a href="#nasil-calisir" onclick="toggleMobileMenu()">Nasıl Çalışır?</a>
+            <a href="#sss" onclick="toggleMobileMenu()">S.S.S.</a>
+            <a href="login.html">Giriş Yap</a>
+            <a href="register.html" class="btn btn-primary btn-lg" style="justify-content:center;">Ücretsiz Başla</a>
+        </div>
+    </div>
+
+    <section class="hero">
+        <div class="hero-badge"><i class="fa-solid fa-check-circle"></i> Tamamen Ücretsiz</div>
+        <h1>İşletmeni <span>Kolayca</span> Yönet</h1>
+        <p>Fatura oluştur, müşterilerini takip et, stoklarını yönet, gelir-gider dengesini gör. Hepsi tek panelde, üstelik ücretsiz.</p>
+        <div class="btns">
+            <a href="register.html" class="btn btn-primary btn-lg"><i class="fa-solid fa-rocket"></i> Hemen Başla</a>
+            <a href="#ozellikler" class="btn btn-light btn-lg">Tüm Özellikler <i class="fa-solid fa-arrow-down"></i></a>
+        </div>
+        <div class="stats-row">
+            <div class="stat-item"><div class="num"><i class="fa-solid fa-receipt"></i></div><div class="txt">Sınırsız Fatura</div></div>
+            <div class="stat-item"><div class="num"><i class="fa-solid fa-cloud"></i></div><div class="txt">Bulut Tabanlı</div></div>
+            <div class="stat-item"><div class="num"><i class="fa-solid fa-mobile-screen"></i></div><div class="txt">Mobil Uyumlu</div></div>
+            <div class="stat-item"><div class="num"><i class="fa-solid fa-shield-halved"></i></div><div class="txt">Güvenli</div></div>
+        </div>
+    </section>
+
+    <section id="ozellikler">
+        <h2>Neler Yapabilirsin?</h2>
+        <p class="sub">İşletmem ile işletmeni dijitale taşı, zamandan kazan</p>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="ficon green"><i class="fa-solid fa-receipt"></i></div>
+                <h4>Fatura Yönetimi</h4>
+                <p>Profesyonel faturalar oluştur, düzenle, PDF çıktısı al. Otomatik numaralandırma ile kayıtlarını düzenli tut.</p>
+            </div>
+            <div class="feature-card">
+                <div class="ficon blue"><i class="fa-solid fa-users"></i></div>
+                <h4>Müşteri Takibi</h4>
+                <p>Tüm müşterilerini tek yerde topla, ara, filtrele. Her müşteriye özel fatura geçmişini anında gör.</p>
+            </div>
+            <div class="feature-card">
+                <div class="ficon purple"><i class="fa-solid fa-box"></i></div>
+                <h4>Stok Yönetimi</h4>
+                <p>Ürünlerini ve hizmetlerini ekle, fiyatlarını belirle. Fatura oluştururken stoktan hızlıca seç.</p>
+            </div>
+            <div class="feature-card">
+                <div class="ficon orange"><i class="fa-solid fa-chart-line"></i></div>
+                <h4>Canlı Kurlar</h4>
+                <p>USD, EUR, GBP kurlarını anlık takip et. Çoklu para birimi desteğiyle yurt dışı işlemlerini yönet.</p>
+            </div>
+            <div class="feature-card">
+                <div class="ficon red"><i class="fa-solid fa-file-pdf"></i></div>
+                <h4>PDF Fatura</h4>
+                <p>Faturalarını tek tıkla profesyonel PDF olarak görüntüle ve yazdır. İstersen IBAN bilgilerini de ekle.</p>
+            </div>
+            <div class="feature-card">
+                <div class="ficon teal"><i class="fa-solid fa-building-columns"></i></div>
+                <h4>IBAN Yönetimi</h4>
+                <p>Banka hesaplarını kaydet, faturalarında hangi IBAN'ın görüneceğini seç.</p>
+            </div>
+            <div class="feature-card">
+                <div class="ficon indigo"><i class="fa-solid fa-coins"></i></div>
+                <h4>Gelir-Gider Takibi</h4>
+                <p>Manuel gelir ve gider girişi yap, aylık kar-zarar durumunu anında gör. İşletmenin mali tablosu elinin altında.</p>
+            </div>
+            <div class="feature-card">
+                <div class="ficon amber"><i class="fa-solid fa-bell"></i></div>
+                <h4>Ödeme Hatırlatıcı</h4>
+                <p>Vadesi yaklaşan faturalar için dashboard'da uyarı al. Hiçbir tahsilatı kaçırma.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="nasil-calisir" style="background:#f8fafc;">
+        <h2>Nasıl Çalışır?</h2>
+        <p class="sub">3 adımda işletmeni yönetmeye başla</p>
+        <div class="how-grid">
+            <div class="how-card">
+                <div class="step">1</div>
+                <h4>Ücretsiz Kaydol</h4>
+                <p>E-posta ve şifrenle 30 saniyede hesap oluştur.</p>
+            </div>
+            <div class="how-card">
+                <div class="step">2</div>
+                <h4>İşletmeni Tanımla</h4>
+                <p>İşletme bilgilerini, müşterilerini ve ürünlerini ekle.</p>
+            </div>
+            <div class="how-card">
+                <div class="step">3</div>
+                <h4>Faturalaşmaya Başla</h4>
+                <p>İlk faturanı oluştur, PDF çıktısını al, işini büyüt.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="sss">
+        <h2>Sıkça Sorulan Sorular</h2>
+        <p class="sub">Merak ettiğin her şey burada</p>
+        <div class="faq">
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">Gerçekten ücretsiz mi? <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-a">Evet, İşletmem tamamen ücretsizdir. Hiçbir özellik için ücret talep edilmez. Kredi kartı gerekmez.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">Verilerim güvende mi? <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-a">Verileriniz Google Firebase altyapısında şifrelenmiş olarak saklanır. Sadece siz erişebilirsiniz.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">Kaç fatura oluşturabilirim? <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-a">Sınırsız! İstediğiniz kadar fatura oluşturabilir, müşteri ekleyebilir ve ürün kaydedebilirsiniz.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">Muhasebeciye gönderebilir miyim? <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-a">Evet, faturalarınızı PDF olarak indirip muhasebecinizle paylaşabilirsiniz.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">Telefondan kullanabilir miyim? <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-a">Kesinlikle! İşletmem tamamen mobil uyumludur. Telefon, tablet veya bilgisayardan sorunsuz kullanabilirsiniz.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">e-Fatura desteği var mı? <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-a">Şu an için e-Fatura entegrasyonu bulunmamaktadır. İlerleyen dönemde eklenecek özellikler arasındadır.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <h2>İşletmeni Büyütmeye Hazır mısın?</h2>
+        <p>Ücretsiz hesabını oluştur, 2 dakikada fatura kesmeye başla.</p>
+        <a href="register.html" class="btn btn-light btn-lg"><i class="fa-solid fa-arrow-right"></i> Ücretsiz Kaydol</a>
+    </section>
+
+    <footer>
+        <div class="footer-links">
+            <a href="#ozellikler">Özellikler</a>
+            <a href="#nasil-calisir">Nasıl Çalışır?</a>
+            <a href="#sss">S.S.S.</a>
+            <a href="login.html">Giriş Yap</a>
+            <a href="register.html">Kaydol</a>
+        </div>
+        <p>© 2026 İşletmem. Tüm hakları saklıdır. | isletmem.com.tr</p>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('open');
+            document.body.style.overflow = document.getElementById('mobileMenu').classList.contains('open') ? 'hidden' : '';
+        }
+        function toggleFaq(el) {
+            el.parentElement.classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
