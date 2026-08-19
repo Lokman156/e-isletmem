@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Çalışanlar - E-İşletmem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px; background: #fff;
+            border-right: 1px solid #e2e8f0;
+            padding: 20px 14px;
+            position: fixed; top: 0; left: 0; bottom: 0;
+            z-index: 100; display: flex; flex-direction: column;
+            transition: transform 0.3s;
+        }
+        .sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 0 8px; margin-bottom: 28px; }
+        .sidebar-logo .s-icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 15px;
+        }
+        .sidebar-logo h2 { font-size: 17px; font-weight: 800; }
+        .sidebar-logo span { color: #10b981; }
+        .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; }
+        .sidebar-nav a {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 10px;
+            color: #64748b; text-decoration: none;
+            font-weight: 600; font-size: 12px; transition: all 0.2s;
+        }
+        .sidebar-nav a:hover { background: #f1f5f9; color: #0f172a; }
+        .sidebar-nav a.active { background: #f5f3ff; color: #7c3aed; font-weight: 700; }
+        .sidebar-footer { border-top: 1px solid #e2e8f0; padding-top: 12px; }
+        .sidebar-footer button {
+            width: 100%; padding: 10px;
+            background: #fef2f2; border: 1px solid #fecaca;
+            border-radius: 10px; color: #ef4444;
+            font-weight: 600; font-size: 12px; cursor: pointer;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .main { flex: 1; margin-left: 250px; padding: 20px 24px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .top-bar h1 { font-size: 22px; font-weight: 800; }
+        .btn-primary {
+            padding: 10px 16px; background: #7c3aed; color: #fff;
+            border: none; border-radius: 8px;
+            font-weight: 700; font-size: 12px; cursor: pointer;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-primary:hover { background: #6d28d9; }
+        .calisan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 14px;
+        }
+        .calisan-card {
+            background: #fff; border: 1px solid #e2e8f0;
+            border-radius: 14px; padding: 20px;
+            transition: all 0.2s;
+        }
+        .calisan-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); transform: translateY(-1px); }
+        .calisan-card .c-avatar {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: linear-gradient(135deg, #7c3aed, #6366f1);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 700; font-size: 16px;
+            margin-bottom: 12px;
+        }
+        .calisan-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+        .calisan-card .rol-badge {
+            display: inline-block; padding: 4px 10px; border-radius: 6px;
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .rol-badge.admin { background: #fef2f2; color: #ef4444; }
+        .rol-badge.muhasebeci { background: #eff6ff; color: #3b82f6; }
+        .rol-badge.satis { background: #ecfdf5; color: #10b981; }
+        .calisan-card .info-row {
+            font-size: 12px; color: #64748b; margin-bottom: 3px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .calisan-card .card-actions {
+            display: flex; gap: 6px; margin-top: 12px;
+            padding-top: 12px; border-top: 1px solid #f1f5f9;
+        }
+        .calisan-card .card-actions button {
+            flex: 1; padding: 7px; border-radius: 6px;
+            border: 1px solid #e2e8f0; background: #fff;
+            color: #64748b; font-weight: 600; font-size: 11px;
+            cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .calisan-card .card-actions button:hover { background: #f1f5f9; }
+        .calisan-card .card-actions button.del:hover { background: #fef2f2; color: #ef4444; }
+        .empty { text-align: center; padding: 40px; color: #94a3b8; grid-column: 1/-1; }
+        .empty i { font-size: 40px; margin-bottom: 10px; opacity: 0.5; }
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 200; display: flex;
+            align-items: center; justify-content: center;
+            padding: 16px;
+        }
+        .modal {
+            background: #fff; border-radius: 16px;
+            padding: 24px; width: 100%; max-width: 420px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+        .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label {
+            display: block; font-size: 10px; font-weight: 700;
+            color: #64748b; margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        .form-group input, .form-group select {
+            width: 100%; padding: 9px 12px;
+            border: 1.5px solid #e2e8f0; border-radius: 8px;
+            font-size: 12px; font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #0f172a; outline: none; background: #f8fafc;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: #7c3aed; background: #fff; }
+        .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+        .btn-cancel { padding: 8px 16px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; color: #64748b; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; }
+        .btn-save { padding: 8px 16px; background: #7c3aed; border: none; border-radius: 8px; color: #fff; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; }
+        .menu-btn { display: none; position: fixed; top: 12px; left: 12px; z-index: 200; width: 38px; height: 38px; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 16px; cursor: pointer; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; }
+        .toast { position: fixed; top: 16px; right: 16px; padding: 12px 18px; border-radius: 10px; color: #fff; font-weight: 600; font-size: 12px; z-index: 999; display: none; animation: slideIn 0.3s ease; }
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+        @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .overlay.open { display: block; }
+            .main { margin-left: 0; padding: 14px; }
+            .menu-btn { display: flex; align-items: center; justify-content: center; }
+            .calisan-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="s-icon"><i class="fa-solid fa-shop"></i></div>
+            <h2>E-İşlet<span>mem</span></h2>
+        </div>
+        <nav class="sidebar-nav">
+    <a href="dashboard.html"><i class="fa-solid fa-grid-2"></i> Dashboard</a>
+    <a href="faturalar.html"><i class="fa-solid fa-receipt"></i> Faturalar</a>
+    <a href="musteriler.html"><i class="fa-solid fa-users"></i> Müşteriler</a>
+    <a href="urunler.html"><i class="fa-solid fa-box"></i> Ürünler</a>
+    <a href="iadeler.html"><i class="fa-solid fa-rotate-left"></i> İadeler</a>
+    <a href="stok-hareketleri.html"><i class="fa-solid fa-arrows-spin"></i> Stok Hareketleri</a>
+    <a href="musteri-yaslandirma.html"><i class="fa-solid fa-chart-pie"></i> Müşteri Yaşlandırma</a>
+    <a href="nakit-akisi.html"><i class="fa-solid fa-money-bill-trend-up"></i> Nakit Akışı</a>
+    <a href="butce-karsilastirma.html"><i class="fa-solid fa-scale-balanced"></i> Bütçe Karşılaştırma</a>
+    <a href="stok-degerleme.html"><i class="fa-solid fa-coins"></i> Stok Değerleme</a>
+    <a href="borc-alacak.html"><i class="fa-solid fa-scale-balanced"></i> Borç/Alacak</a>
+    <a href="kasa-defteri.html"><i class="fa-solid fa-cash-register"></i> Kasa Defteri</a>
+    <a href="tekrarlayan-fatura.html"><i class="fa-solid fa-rotate"></i> Tekrarlayan Fatura</a>
+    <a href="ibanlar.html"><i class="fa-solid fa-building-columns"></i> IBANlar</a>
+    <a href="gelir-gider.html"><i class="fa-solid fa-coins"></i> Gelir/Gider</a>
+    <a href="para-hareketleri.html"><i class="fa-solid fa-arrow-right-arrow-left"></i> Para Hareketleri</a>
+    <a href="calisanlar.html" class="active"><i class="fa-solid fa-user-tie"></i> Çalışanlar</a>
+    <a href="yedekleme.html"><i class="fa-solid fa-download"></i> Yedekleme</a>
+    <a href="kurlar.html"><i class="fa-solid fa-chart-line"></i> Canlı Kurlar</a>
+    <a href="ayarlar.html"><i class="fa-solid fa-gear"></i> Ayarlar</a>
+</nav>
+        <div class="sidebar-footer">
+            <button onclick="cikisYap()"><i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap</button>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="top-bar">
+            <h1>👔 Çalışanlar</h1>
+            <button class="btn-primary" onclick="openModal()"><i class="fa-solid fa-plus"></i> Çalışan Ekle</button>
+        </div>
+
+        <div class="calisan-grid" id="calisanGrid">
+            <div class="empty"><i class="fa-solid fa-user-tie"></i><p>Henüz çalışan eklenmemiş</p></div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="modalOverlay" style="display:none;">
+        <div class="modal">
+            <h3 id="modalTitle">Çalışan Ekle</h3>
+            <form id="calisanForm">
+                <input type="hidden" id="kayitId">
+                <div class="form-group">
+                    <label>Ad Soyad</label>
+                    <input type="text" id="adSoyad" placeholder="Ad Soyad" required>
+                </div>
+                <div class="form-group">
+                    <label>E-posta</label>
+                    <input type="email" id="email" placeholder="ornek@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Rol / Yetki</label>
+                    <select id="rol">
+                        <option value="admin">Admin - Tam Yetki</option>
+                        <option value="muhasebeci">Muhasebeci - Fatura ve Rapor</option>
+                        <option value="satis">Satış Temsilcisi - Sadece Fatura</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">İptal</button>
+                    <button type="submit" class="btn-save">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, doc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2UDy6nNB966e_oiU46z1l_lgW4SChpFI",
+            authDomain: "yonetim-f485e.firebaseapp.com",
+            projectId: "yonetim-f485e",
+            storageBucket: "yonetim-f485e.firebasestorage.app",
+            messagingSenderId: "699827175577",
+            appId: "1:699827175577:web:0806bd508a82e6cbeaf808",
+            measurementId: "G-SMGKQBM22K"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        let currentUser = null;
+        let tumCalisanlar = [];
+
+        window.toggleMenu = function() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('open');
+        };
+
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.className = `toast ${type}`;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 4000);
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUser = user;
+            await loadCalisanlar();
+        });
+
+        async function loadCalisanlar() {
+            const snap = await getDocs(query(collection(db, "calisanlar"), where("isletmeId", "==", currentUser.uid)));
+            tumCalisanlar = [];
+            snap.forEach(doc => tumCalisanlar.push({ id: doc.id, ...doc.data() }));
+            renderCalisanlar();
+        }
+
+        function renderCalisanlar() {
+            const grid = document.getElementById('calisanGrid');
+            if (tumCalisanlar.length === 0) {
+                grid.innerHTML = '<div class="empty"><i class="fa-solid fa-user-tie"></i><p>Henüz çalışan eklenmemiş</p></div>';
+                return;
+            }
+            const rolText = { admin: 'Admin', muhasebeci: 'Muhasebeci', satis: 'Satış Temsilcisi' };
+            grid.innerHTML = tumCalisanlar.map(c => `
+                <div class="calisan-card">
+                    <div class="c-avatar">${(c.adSoyad||'Ç').charAt(0).toUpperCase()}</div>
+                    <h4>${c.adSoyad}</h4>
+                    <span class="rol-badge ${c.rol}">${rolText[c.rol] || c.rol}</span>
+                    <div class="info-row"><i class="fa-solid fa-envelope"></i> ${c.email}</div>
+                    <div class="card-actions">
+                        <button onclick="editCalisan('${c.id}')"><i class="fa-solid fa-pen"></i> Düzenle</button>
+                        <button class="del" onclick="deleteCalisan('${c.id}')"><i class="fa-solid fa-trash"></i> Sil</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.openModal = function(calisan = null) {
+            document.getElementById('modalOverlay').style.display = 'flex';
+            document.getElementById('modalTitle').textContent = calisan ? 'Çalışan Düzenle' : 'Çalışan Ekle';
+            document.getElementById('kayitId').value = calisan?.id || '';
+            document.getElementById('adSoyad').value = calisan?.adSoyad || '';
+            document.getElementById('email').value = calisan?.email || '';
+            document.getElementById('rol').value = calisan?.rol || 'satis';
+        };
+
+        window.closeModal = () => document.getElementById('modalOverlay').style.display = 'none';
+
+        document.getElementById('calisanForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('kayitId').value;
+            const data = {
+                adSoyad: document.getElementById('adSoyad').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                rol: document.getElementById('rol').value,
+                isletmeId: currentUser.uid, updatedAt: serverTimestamp()
+            };
+            try {
+                if (id) { await updateDoc(doc(db, "calisanlar", id), data); showToast('Güncellendi', 'success'); }
+                else { data.createdAt = serverTimestamp(); await addDoc(collection(db, "calisanlar"), data); showToast('Eklendi', 'success'); }
+                closeModal();
+                await loadCalisanlar();
+            } catch (err) { showToast('Hata: ' + err.message, 'error'); }
+        });
+
+        window.editCalisan = function(id) {
+            const c = tumCalisanlar.find(x => x.id === id);
+            if (c) openModal(c);
+        };
+
+        window.deleteCalisan = async function(id) {
+            if (!confirm('Silinsin mi?')) return;
+            await deleteDoc(doc(db, "calisanlar", id));
+            showToast('Silindi', 'success');
+            await loadCalisanlar();
+        };
+
+        window.cikisYap = async () => { await signOut(auth); window.location.href = 'login.html'; };
+    </script>
+</body>
+</html>
