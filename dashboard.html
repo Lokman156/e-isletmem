@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - E-İşletmem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color: #0f172a; display: flex; min-height: 100vh; }
+        .sidebar { width: 250px; background: #fff; border-right: 1px solid #e2e8f0; padding: 20px 14px; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; display: flex; flex-direction: column; transition: transform 0.3s; }
+        .sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 0 8px; margin-bottom: 28px; }
+        .sidebar-logo .s-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; }
+        .sidebar-logo h2 { font-size: 17px; font-weight: 800; }
+        .sidebar-logo span { color: #10b981; }
+        .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: #64748b; text-decoration: none; font-weight: 600; font-size: 12px; transition: all 0.2s; }
+        .sidebar-nav a:hover { background: #f1f5f9; color: #0f172a; }
+        .sidebar-nav a.active { background: #ecfdf5; color: #10b981; font-weight: 700; }
+        .sidebar-footer { border-top: 1px solid #e2e8f0; padding-top: 12px; }
+        .sidebar-footer button { width: 100%; padding: 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; color: #ef4444; font-weight: 600; font-size: 12px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .main { flex: 1; margin-left: 250px; padding: 20px 24px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .top-bar h1 { font-size: 22px; font-weight: 800; }
+        .welcome { color: #64748b; font-size: 12px; margin-top: 2px; }
+        .user-badge { display: flex; align-items: center; gap: 8px; background: #fff; padding: 8px 14px; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .user-badge .avatar { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #3b82f6, #6366f1); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 12px; }
+        .user-badge .info span { display: block; font-weight: 600; font-size: 11px; }
+        .user-badge .info small { color: #94a3b8; font-size: 10px; }
+        .alert-card { border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; }
+        .alert-warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+        .alert-danger { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+        .alert-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+        .alert-card i { font-size: 18px; flex-shrink: 0; }
+        .alert-card .alert-close { margin-left: auto; cursor: pointer; background: none; border: none; font-size: 14px; color: inherit; }
+        .stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; transition: all 0.2s; }
+        .stat-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.05); transform: translateY(-1px); }
+        .stat-card .s-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; margin-bottom: 10px; }
+        .s-icon.green { background: #ecfdf5; color: #10b981; }
+        .s-icon.blue { background: #eff6ff; color: #3b82f6; }
+        .s-icon.orange { background: #fffbeb; color: #f59e0b; }
+        .s-icon.purple { background: #f5f3ff; color: #8b5cf6; }
+        .s-icon.red { background: #fef2f2; color: #ef4444; }
+        .s-icon.teal { background: #f0fdfa; color: #14b8a6; }
+        .stat-card .val { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+        .stat-card .lbl { color: #64748b; font-size: 11px; font-weight: 600; margin-top: 2px; }
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .card-header h3 { font-size: 14px; font-weight: 700; }
+        .card-header a { color: #3b82f6; font-size: 11px; font-weight: 600; text-decoration: none; }
+        .chart-wrap { position: relative; height: 200px; }
+        .chart-wrap canvas { width: 100% !important; height: 100% !important; }
+        .bottom-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
+        .fatura-list { list-style: none; }
+        .fatura-list li { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid #f1f5f9; font-size: 12px; gap: 6px; }
+        .fatura-list li:last-child { border-bottom: none; }
+        .finfo h4 { font-size: 12px; font-weight: 600; }
+        .finfo span { font-size: 10px; color: #94a3b8; }
+        .badge { padding: 3px 7px; border-radius: 5px; font-size: 9px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+        .badge.paid { background: #ecfdf5; color: #10b981; }
+        .badge.pending { background: #fffbeb; color: #f59e0b; }
+        .badge.overdue { background: #fef2f2; color: #ef4444; }
+        .kur-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 12px; }
+        .kur-row:last-child { border-bottom: none; }
+        .kur-row .kur-val { font-weight: 700; }
+        .empty { text-align: center; padding: 20px; color: #94a3b8; }
+        .empty i { font-size: 28px; margin-bottom: 6px; opacity: 0.5; }
+        .empty p { font-size: 11px; }
+        .menu-btn { display: none; position: fixed; top: 12px; left: 12px; z-index: 200; width: 38px; height: 38px; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 16px; cursor: pointer; color: #0f172a; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; }
+        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); } .overlay.open { display: block; } .main { margin-left: 0; padding: 14px; } .menu-btn { display: flex; align-items: center; justify-content: center; } .stats { grid-template-columns: repeat(2, 1fr); gap: 8px; } .charts-grid { grid-template-columns: 1fr; } .bottom-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><div class="s-icon"><i class="fa-solid fa-shop"></i></div><h2>E-İşlet<span>mem</span></h2></div>
+    <nav class="sidebar-nav">
+        <a href="dashboard.html" class="active"><i class="fa-solid fa-grid-2"></i> Dashboard</a>
+        <a href="faturalar.html"><i class="fa-solid fa-receipt"></i> Faturalar</a>
+        <a href="musteriler.html"><i class="fa-solid fa-users"></i> Müşteriler</a>
+        <a href="urunler.html"><i class="fa-solid fa-box"></i> Ürünler</a>
+        <a href="iadeler.html"><i class="fa-solid fa-rotate-left"></i> İadeler</a>
+        <a href="stok-hareketleri.html"><i class="fa-solid fa-arrows-spin"></i> Stok Hareketleri</a>
+        <a href="musteri-yaslandirma.html"><i class="fa-solid fa-chart-pie"></i> Müşteri Yaşlandırma</a>
+        <a href="nakit-akisi.html"><i class="fa-solid fa-money-bill-trend-up"></i> Nakit Akışı</a>
+        <a href="butce-karsilastirma.html"><i class="fa-solid fa-scale-balanced"></i> Bütçe Karşılaştırma</a>
+        <a href="stok-degerleme.html"><i class="fa-solid fa-coins"></i> Stok Değerleme</a>
+        <a href="borc-alacak.html"><i class="fa-solid fa-scale-balanced"></i> Borç/Alacak</a>
+        <a href="kasa-defteri.html"><i class="fa-solid fa-cash-register"></i> Kasa Defteri</a>
+        <a href="tekrarlayan-fatura.html"><i class="fa-solid fa-rotate"></i> Tekrarlayan Fatura</a>
+        <a href="ibanlar.html"><i class="fa-solid fa-building-columns"></i> IBANlar</a>
+        <a href="gelir-gider.html"><i class="fa-solid fa-coins"></i> Gelir/Gider</a>
+        <a href="para-hareketleri.html"><i class="fa-solid fa-arrow-right-arrow-left"></i> Para Hareketleri</a>
+        <a href="calisanlar.html"><i class="fa-solid fa-user-tie"></i> Çalışanlar</a>
+        <a href="yedekleme.html"><i class="fa-solid fa-download"></i> Yedekleme</a>
+        <a href="kurlar.html"><i class="fa-solid fa-chart-line"></i> Canlı Kurlar</a>
+        <a href="ayarlar.html"><i class="fa-solid fa-gear"></i> Ayarlar</a>
+    </nav>
+    <div class="sidebar-footer"><button onclick="cikisYap()"><i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap</button></div>
+</aside>
+
+<main class="main">
+    <div class="top-bar"><div><h1>Dashboard</h1><p class="welcome" id="welcomeMsg">Yükleniyor...</p></div>
+        <div class="user-badge"><div class="avatar" id="userInitial">-</div><div class="info"><span id="isletmeAdiTop">-</span><small>E-İşletmem</small></div></div>
+    </div>
+
+    <div class="alert-card alert-info" id="duyuruSlider" style="display:none;">
+        <i class="fa-solid fa-bullhorn"></i><span id="duyuruText"></span>
+        <button class="alert-close" onclick="document.getElementById('duyuruSlider').style.display='none'"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="alert-card alert-warning" id="hatirlaticiAlert" style="display:none;">
+        <i class="fa-solid fa-bell"></i><span id="hatirlaticiText"></span>
+        <button class="alert-close" onclick="document.getElementById('hatirlaticiAlert').style.display='none'"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="alert-card alert-danger" id="stokAlert" style="display:none;">
+        <i class="fa-solid fa-boxes-stacked"></i><span id="stokAlertText"></span>
+        <button class="alert-close" onclick="document.getElementById('stokAlert').style.display='none'"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card"><div class="s-icon green"><i class="fa-solid fa-receipt"></i></div><div class="val" id="toplamFatura">0</div><div class="lbl">Toplam Fatura</div></div>
+        <div class="stat-card"><div class="s-icon blue"><i class="fa-solid fa-turkish-lira-sign"></i></div><div class="val" id="toplamGelir">₺0</div><div class="lbl">Toplam Gelir</div></div>
+        <div class="stat-card"><div class="s-icon red"><i class="fa-solid fa-clock"></i></div><div class="val" id="gecikmisFatura">0</div><div class="lbl">Gecikmiş Fatura</div></div>
+        <div class="stat-card"><div class="s-icon purple"><i class="fa-solid fa-users"></i></div><div class="val" id="toplamMusteri">0</div><div class="lbl">Müşteri</div></div>
+        <div class="stat-card"><div class="s-icon orange"><i class="fa-solid fa-scale-balanced"></i></div><div class="val" id="toplamAlacak">₺0</div><div class="lbl">Toplam Alacak</div></div>
+        <div class="stat-card"><div class="s-icon teal"><i class="fa-solid fa-cash-register"></i></div><div class="val" id="kasaBakiye">₺0</div><div class="lbl">Kasa Bakiyesi</div></div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="card"><div class="card-header"><h3>📊 Aylık Gelir-Gider</h3></div><div class="chart-wrap"><canvas id="gelirGiderChart"></canvas></div></div>
+        <div class="card"><div class="card-header"><h3>🥧 Fatura Durumları</h3></div><div class="chart-wrap"><canvas id="faturaDurumChart"></canvas></div></div>
+    </div>
+
+    <div class="bottom-grid">
+        <div class="card"><div class="card-header"><h3>📋 Son Faturalar</h3><a href="faturalar.html">Tümü →</a></div>
+            <ul class="fatura-list" id="sonFaturalarList"><li class="empty"><i class="fa-solid fa-receipt"></i><p>Henüz fatura yok</p></li></ul>
+        </div>
+        <div class="card"><div class="card-header"><h3>💱 Canlı Kurlar</h3><a href="kurlar.html">Detay →</a></div>
+            <div id="kurWidget">
+                <div class="kur-row"><span>🇺🇸 USD/TRY</span><span class="kur-val" id="kurUSD">--</span></div>
+                <div class="kur-row"><span>🇪🇺 EUR/TRY</span><span class="kur-val" id="kurEUR">--</span></div>
+                <div class="kur-row"><span>🇬🇧 GBP/TRY</span><span class="kur-val" id="kurGBP">--</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-top:14px;">
+        <div class="card"><div class="card-header"><h3>🏆 En Çok Kazandıran Müşteriler</h3></div><div id="topMusterilerBody"><div class="empty"><i class="fa-solid fa-users"></i><p>Henüz veri yok</p></div></div></div>
+        <div class="card"><div class="card-header"><h3>📦 En Çok Satılan Ürünler</h3></div><div id="topUrunlerBody"><div class="empty"><i class="fa-solid fa-box"></i><p>Henüz veri yok</p></div></div></div>
+    </div>
+
+    <div class="card" style="margin-top:14px;"><div class="card-header"><h3>📊 Vergi Özeti (Bu Ay)</h3></div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px;">
+            <div style="text-align:center;padding:10px;"><div style="font-size:11px;color:#64748b;font-weight:600;">TOPLAM GELİR</div><div style="font-size:20px;font-weight:800;color:#10b981;" id="vergiGelir">₺0</div></div>
+            <div style="text-align:center;padding:10px;"><div style="font-size:11px;color:#64748b;font-weight:600;">TOPLAM KDV</div><div style="font-size:20px;font-weight:800;color:#3b82f6;" id="vergiKDV">₺0</div></div>
+            <div style="text-align:center;padding:10px;"><div style="font-size:11px;color:#64748b;font-weight:600;">ORTALAMA FATURA</div><div style="font-size:20px;font-weight:800;color:#8b5cf6;" id="vergiOrtalama">₺0</div></div>
+            <div style="text-align:center;padding:10px;"><div style="font-size:11px;color:#64748b;font-weight:600;">TOPLAM FATURA</div><div style="font-size:20px;font-weight:800;color:#f59e0b;" id="vergiAdet">0</div></div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;"><div class="card-header"><h3>📅 Dönem Karşılaştırması (Gelir)</h3></div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px;">
+            <div style="text-align:center;padding:10px;background:#f8fafc;border-radius:8px;"><div style="font-size:10px;color:#64748b;font-weight:600;">SON 7 GÜN</div><div style="font-size:18px;font-weight:800;color:#10b981;" id="donem7">₺0</div></div>
+            <div style="text-align:center;padding:10px;background:#f8fafc;border-radius:8px;"><div style="font-size:10px;color:#64748b;font-weight:600;">SON 30 GÜN</div><div style="font-size:18px;font-weight:800;color:#3b82f6;" id="donem30">₺0</div></div>
+            <div style="text-align:center;padding:10px;background:#f8fafc;border-radius:8px;"><div style="font-size:10px;color:#64748b;font-weight:600;">SON 90 GÜN</div><div style="font-size:18px;font-weight:800;color:#8b5cf6;" id="donem90">₺0</div></div>
+        </div>
+    </div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = { apiKey: "AIzaSyB2UDy6nNB966e_oiU46z1l_lgW4SChpFI", authDomain: "yonetim-f485e.firebaseapp.com", projectId: "yonetim-f485e", storageBucket: "yonetim-f485e.firebasestorage.app", messagingSenderId: "699827175577", appId: "1:699827175577:web:0806bd508a82e6cbeaf808" };
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let currentUser = null;
+let gelirGiderChart, faturaDurumChart;
+
+window.toggleMenu = function() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open'); };
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    currentUser = user;
+    document.getElementById('userInitial').textContent = user.email.charAt(0).toUpperCase();
+    const ds = await getDoc(doc(db, "isletmeler", user.uid));
+    if (ds.exists()) { const d = ds.data(); document.getElementById('isletmeAdiTop').textContent = d.isletmeAdi; document.getElementById('welcomeMsg').textContent = `Hoş geldin, ${d.isletmeAdi}`; }
+    await loadDuyurular();
+    await loadDashboard(user.uid);
+});
+
+async function loadDuyurular() {
+    const snap = await getDocs(collection(db, "duyurular"));
+    const duyurular = []; snap.forEach(doc => duyurular.push(doc.data()));
+    duyurular.sort((a,b) => (b.tarih?.toDate()||0) - (a.tarih?.toDate()||0));
+    if (duyurular.length > 0) { document.getElementById('duyuruSlider').style.display = 'flex'; document.getElementById('duyuruText').textContent = duyurular[0].mesaj; }
+}
+
+async function loadDashboard(uid) {
+    const [fSnap, mSnap, ggSnap, ksSnap, bcSnap, urunSnap] = await Promise.all([
+        getDocs(query(collection(db, "faturalar"), where("isletmeId", "==", uid))),
+        getDocs(query(collection(db, "musteriler"), where("isletmeId", "==", uid))),
+        getDocs(query(collection(db, "gelir_gider"), where("isletmeId", "==", uid))),
+        getDocs(query(collection(db, "kasa_defteri"), where("isletmeId", "==", uid))),
+        getDocs(query(collection(db, "borc_alacak"), where("isletmeId", "==", uid))),
+        getDocs(query(collection(db, "urunler"), where("isletmeId", "==", uid)))
+    ]);
+
+    let tf=0, tg=0, gc=0, topAlacak=0, kasaBakiye=0;
+    const now=new Date(), aybasi=new Date(now.getFullYear(),now.getMonth(),1);
+    const son=[], yaklasan=[], aylikGelir={}, aylikGider={}, durumSay={odendi:0,gonderildi:0,taslak:0,gecikti:0,iptal:0};
+    const musteriCiro={}, urunSatis={};
+    let aylikToplamGelir=0, aylikToplamKDV=0, aylikFaturaAdet=0;
+
+    fSnap.forEach(doc => {
+        const f=doc.data(); tf++;
+        durumSay[f.durum]=(durumSay[f.durum]||0)+1;
+        if(f.durum==='odendi') tg+=f.genelToplam||0;
+        if(f.durum==='gecikti') gc++;
+        if(f.sonOdemeTarihi&&(f.durum==='gonderildi'||f.durum==='taslak')){
+            const kalan=Math.ceil((f.sonOdemeTarihi.toDate()-now)/86400000);
+            if(kalan<=3) yaklasan.push({...f,kalanGun:kalan});
+        }
+        son.push({id:doc.id,...f});
+        if(f.durum==='odendi'&&f.createdAt&&f.createdAt.toDate()>=aybasi){
+            aylikToplamGelir+=f.genelToplam||0; aylikToplamKDV+=f.kdvToplami||0; aylikFaturaAdet++;
+            if(!musteriCiro[f.musteriAdi]) musteriCiro[f.musteriAdi]={ciro:0,adet:0};
+            musteriCiro[f.musteriAdi].ciro+=f.genelToplam||0; musteriCiro[f.musteriAdi].adet++;
+            (f.kalemler||[]).forEach(k=>{ if(!urunSatis[k.urunAdi]) urunSatis[k.urunAdi]={adet:0,tutar:0}; urunSatis[k.urunAdi].adet+=k.miktar||0; urunSatis[k.urunAdi].tutar+=(k.miktar||0)*(k.birimFiyat||0); });
+        }
+    });
+
+    ggSnap.forEach(doc=>{ const g=doc.data(); const ay=g.tarih?.toDate?.()?g.tarih.toDate().toLocaleDateString('tr-TR',{month:'short',year:'numeric'}):'Bilinmeyen'; if(g.tur==='gelir') aylikGelir[ay]=(aylikGelir[ay]||0)+(g.tutar||0); else aylikGider[ay]=(aylikGider[ay]||0)+(g.tutar||0); });
+    ksSnap.forEach(doc=>{ const k=doc.data(); if(k.tur==='giris') kasaBakiye+=k.tutar||0; else kasaBakiye-=k.tutar||0; });
+    bcSnap.forEach(doc=>{ const b=doc.data(); if(b.tur==='alacak'&&b.durum!=='odendi') topAlacak+=b.tutar||0; });
+    son.sort((a,b)=>(b.createdAt?.toDate()||0)-(a.createdAt?.toDate()||0));
+
+    document.getElementById('toplamFatura').textContent=tf;
+    document.getElementById('toplamGelir').textContent='₺'+tg.toLocaleString('tr-TR');
+    document.getElementById('gecikmisFatura').textContent=gc;
+    document.getElementById('toplamMusteri').textContent=mSnap.size;
+    document.getElementById('toplamAlacak').textContent='₺'+topAlacak.toLocaleString('tr-TR');
+    document.getElementById('kasaBakiye').textContent='₺'+kasaBakiye.toLocaleString('tr-TR');
+
+    const alertDiv=document.getElementById('hatirlaticiAlert');
+    if(yaklasan.length>0){ alertDiv.style.display='flex'; document.getElementById('hatirlaticiText').textContent=`${yaklasan.length} fatura yakında vadesi doluyor!`; }
+    else alertDiv.style.display='none';
+
+    const liste=document.getElementById('sonFaturalarList');
+    const son5=son.slice(0,5);
+    liste.innerHTML=son5.length===0?'<li class="empty"><i class="fa-solid fa-receipt"></i><p>Henüz fatura yok</p></li>':son5.map(f=>{ let bc='pending'; if(f.durum==='odendi') bc='paid'; if(f.durum==='gecikti') bc='overdue'; return `<li><div class="finfo"><h4>${f.musteriAdi||'Müşteri'}</h4><span>${f.faturaNo||'#'}</span></div><span class="badge ${bc}">${f.durum||'taslak'}</span><span style="font-weight:700;font-size:12px;">₺${(f.genelToplam||0).toLocaleString('tr-TR')}</span></li>`; }).join('');
+
+    // Vergi
+    document.getElementById('vergiGelir').textContent='₺'+aylikToplamGelir.toLocaleString('tr-TR');
+    document.getElementById('vergiKDV').textContent='₺'+aylikToplamKDV.toLocaleString('tr-TR');
+    document.getElementById('vergiOrtalama').textContent='₺'+(aylikFaturaAdet>0?(aylikToplamGelir/aylikFaturaAdet).toLocaleString('tr-TR'):'0');
+    document.getElementById('vergiAdet').textContent=aylikFaturaAdet;
+
+    // En çok kazandıran müşteriler
+    const topMusteriler=Object.entries(musteriCiro).sort((a,b)=>b[1].ciro-a[1].ciro).slice(0,5);
+    const tmBody=document.getElementById('topMusterilerBody');
+    if(topMusteriler.length===0) tmBody.innerHTML='<div class="empty"><i class="fa-solid fa-users"></i><p>Henüz veri yok</p></div>';
+    else tmBody.innerHTML=topMusteriler.map(([ad,veri],i)=>{ const maxCiro=topMusteriler[0][1].ciro; const barWidth=(veri.ciro/maxCiro)*100; const colors=['#10b981','#3b82f6','#8b5cf6','#f59e0b','#ef4444']; return `<div style="display:flex;align-items:center;gap:10px;"><div style="width:24px;height:24px;border-radius:6px;background:${colors[i]};color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${i+1}</div><div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:12px;font-weight:600;">${ad}</span><span style="font-size:12px;font-weight:700;">₺${veri.ciro.toLocaleString('tr-TR')}</span></div><div style="height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:${barWidth}%;background:${colors[i]};border-radius:3px;"></div></div></div></div>`; }).join('');
+
+    // En çok satılan ürünler
+    const topUrunler=Object.entries(urunSatis).sort((a,b)=>b[1].adet-a[1].adet).slice(0,5);
+    const tuBody=document.getElementById('topUrunlerBody');
+    if(topUrunler.length===0) tuBody.innerHTML='<div class="empty"><i class="fa-solid fa-box"></i><p>Henüz veri yok</p></div>';
+    else tuBody.innerHTML=topUrunler.map(([ad,veri],i)=>{ const maxAdet=topUrunler[0][1].adet; const barWidth=(veri.adet/maxAdet)*100; const colors=['#10b981','#3b82f6','#8b5cf6','#f59e0b','#ef4444']; return `<div style="display:flex;align-items:center;gap:10px;"><div style="width:24px;height:24px;border-radius:6px;background:${colors[i]};color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${i+1}</div><div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:12px;font-weight:600;">${ad}</span><span style="font-size:12px;font-weight:700;">${veri.adet} adet</span></div><div style="height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:${barWidth}%;background:${colors[i]};border-radius:3px;"></div></div></div></div>`; }).join('');
+
+    // Stok uyarısı
+    let kritikUrunler=[];
+    urunSnap.forEach(doc=>{ const u=doc.data(); if((u.stok||0)<=(u.minStok||5)&&(u.stok||0)>0) kritikUrunler.push(u.urunAdi+' ('+u.stok+' adet)'); if((u.stok||0)<=0) kritikUrunler.push('🔴 '+u.urunAdi+' (Tükendi!)'); });
+    if(kritikUrunler.length>0){ document.getElementById('stokAlert').style.display='flex'; document.getElementById('stokAlertText').textContent='⚠️ Kritik stok: '+kritikUrunler.slice(0,3).join(', ')+(kritikUrunler.length>3?' ve '+(kritikUrunler.length-3)+' ürün daha...':''); }
+
+    // 7/30/90 gün
+    const yediGun=new Date(now); yediGun.setDate(now.getDate()-7);
+    const otuzGun=new Date(now); otuzGun.setDate(now.getDate()-30);
+    const doksanGun=new Date(now); doksanGun.setDate(now.getDate()-90);
+    let gelir7=0,gelir30=0,gelir90=0;
+    fSnap.forEach(doc=>{ const f=doc.data(); if(f.durum==='odendi'&&f.createdAt){ const t=f.createdAt.toDate(); if(t>=yediGun) gelir7+=f.genelToplam||0; if(t>=otuzGun) gelir30+=f.genelToplam||0; if(t>=doksanGun) gelir90+=f.genelToplam||0; } });
+    document.getElementById('donem7').textContent='₺'+gelir7.toLocaleString('tr-TR');
+    document.getElementById('donem30').textContent='₺'+gelir30.toLocaleString('tr-TR');
+    document.getElementById('donem90').textContent='₺'+gelir90.toLocaleString('tr-TR');
+
+    // Grafikler
+    const aylar=Object.keys({...aylikGelir,...aylikGider}).sort().slice(-6);
+    const ctx1=document.getElementById('gelirGiderChart').getContext('2d');
+    if(gelirGiderChart) gelirGiderChart.destroy();
+    gelirGiderChart=new Chart(ctx1,{type:'bar',data:{labels:aylar.length?aylar:['Veri Yok'],datasets:[{label:'Gelir',data:aylar.map(a=>aylikGelir[a]||0),backgroundColor:'#10b981',borderRadius:6},{label:'Gider',data:aylar.map(a=>aylikGider[a]||0),backgroundColor:'#ef4444',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:10,font:{size:10}}}},scales:{y:{beginAtZero:true,ticks:{font:{size:10}}},x:{ticks:{font:{size:10}}}}}});
+
+    const ctx2=document.getElementById('faturaDurumChart').getContext('2d');
+    if(faturaDurumChart) faturaDurumChart.destroy();
+    faturaDurumChart=new Chart(ctx2,{type:'doughnut',data:{labels:['Ödendi','Gönderildi','Taslak','Gecikti','İptal'],datasets:[{data:[durumSay.odendi||0,durumSay.gonderildi||0,durumSay.taslak||0,durumSay.gecikti||0,durumSay.iptal||0],backgroundColor:['#10b981','#3b82f6','#94a3b8','#ef4444','#f59e0b'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:8,font:{size:10}}}}}});
+}
+
+async function kurlariGetir() {
+    try { const [u,e,g]=await Promise.all([fetch('https://open.er-api.com/v6/latest/USD'),fetch('https://open.er-api.com/v6/latest/EUR'),fetch('https://open.er-api.com/v6/latest/GBP')]); const ud=await u.json(),ed=await e.json(),gd=await g.json(); document.getElementById('kurUSD').textContent='₺'+ud.rates.TRY.toFixed(4); document.getElementById('kurEUR').textContent='₺'+ed.rates.TRY.toFixed(4); document.getElementById('kurGBP').textContent='₺'+gd.rates.TRY.toFixed(4); } catch(e) {}
+}
+kurlariGetir(); setInterval(kurlariGetir,30000);
+
+window.cikisYap = async () => { await signOut(auth); window.location.href = 'login.html'; };
+</script>
+</body>
+</html>
