@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol - FaturaPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25);
+        }
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+        }
+        .logo h1 span { color: #10b981; }
+        .logo p { color: #64748b; font-size: 14px; margin-top: 4px; }
+        .card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 40px 32px;
+            width: 100%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+        .input-wrap {
+            position: relative;
+        }
+        .input-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+        .input-wrap input {
+            width: 100%;
+            padding: 13px 14px 13px 42px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #0f172a;
+            outline: none;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+        .input-wrap input:focus {
+            border-color: #10b981;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.08);
+        }
+        .input-wrap input:focus ~ i { color: #10b981; }
+        .input-wrap input::placeholder { color: #94a3b8; }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+        }
+        .btn:active { transform: translateY(0); }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+        .alt-link {
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+        .alt-link a { color: #10b981; text-decoration: none; font-weight: 700; }
+        .alt-link a:hover { text-decoration: underline; }
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 13px;
+            z-index: 999;
+            display: none;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @media (max-width: 480px) {
+            .card { padding: 28px 20px; }
+            .logo h1 { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo">
+            <div class="logo-icon"><i class="fa-solid fa-file-invoice"></i></div>
+            <h1>Fatura<span>Pro</span></h1>
+            <p>İşletmeni yönetmeye başla</p>
+        </div>
+
+        <div class="card">
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>İşletme Adı</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-building"></i>
+                        <input type="text" id="isletmeAdi" placeholder="İşletme adınız" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>E-posta Adresi</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-envelope"></i>
+                        <input type="email" id="email" placeholder="ornek@email.com" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Şifre</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="sifre" placeholder="En az 6 karakter" required minlength="6">
+                    </div>
+                </div>
+                <button type="submit" class="btn" id="registerBtn">
+                    <span id="btnText">Hesap Oluştur</span>
+                    <span class="spinner" id="spinner"></span>
+                </button>
+            </form>
+
+            <div class="divider">ZATEN HESABIN VAR MI?</div>
+            <div class="alt-link">
+                <a href="login.html">Giriş Yap →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2UDy6nNB966e_oiU46z1l_lgW4SChpFI",
+            authDomain: "yonetim-f485e.firebaseapp.com",
+            projectId: "yonetim-f485e",
+            storageBucket: "yonetim-f485e.firebasestorage.app",
+            messagingSenderId: "699827175577",
+            appId: "1:699827175577:web:0806bd508a82e6cbeaf808",
+            measurementId: "G-SMGKQBM22K"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `toast ${type}`;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 4000);
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const isletmeAdi = document.getElementById('isletmeAdi').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const sifre = document.getElementById('sifre').value;
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('spinner');
+            const btn = document.getElementById('registerBtn');
+
+            if (!isletmeAdi || !email || !sifre) return showToast('Tüm alanları doldurun', 'error');
+            if (sifre.length < 6) return showToast('Şifre en az 6 karakter olmalı', 'error');
+
+            btnText.style.display = 'none';
+            spinner.style.display = 'inline-block';
+            btn.disabled = true;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, sifre);
+                await setDoc(doc(db, "isletmeler", userCredential.user.uid), {
+                    isletmeAdi, email, adres: "", telefon: "", logoURL: "",
+                    sahibi: userCredential.user.uid, createdAt: serverTimestamp()
+                });
+                showToast('Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...', 'success');
+                setTimeout(() => window.location.href = 'login.html', 2000);
+            } catch (error) {
+                let msg = 'Bir hata oluştu';
+                if (error.code === 'auth/email-already-in-use') msg = 'Bu e-posta zaten kullanımda';
+                else if (error.code === 'auth/invalid-email') msg = 'Geçersiz e-posta';
+                else if (error.code === 'auth/weak-password') msg = 'Şifre çok zayıf';
+                showToast(msg, 'error');
+            } finally {
+                btnText.style.display = 'inline';
+                spinner.style.display = 'none';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
