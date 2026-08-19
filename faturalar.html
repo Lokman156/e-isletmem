@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faturalar - E-İşletmem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color: #0f172a; display: flex; min-height: 100vh; }
+        .sidebar { width: 250px; background: #fff; border-right: 1px solid #e2e8f0; padding: 20px 14px; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; display: flex; flex-direction: column; transition: transform 0.3s; }
+        .sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 0 8px; margin-bottom: 28px; }
+        .sidebar-logo .s-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; }
+        .sidebar-logo h2 { font-size: 17px; font-weight: 800; }
+        .sidebar-logo span { color: #10b981; }
+        .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: #64748b; text-decoration: none; font-weight: 600; font-size: 12px; transition: all 0.2s; }
+        .sidebar-nav a:hover { background: #f1f5f9; color: #0f172a; }
+        .sidebar-nav a.active { background: #ecfdf5; color: #10b981; font-weight: 700; }
+        .sidebar-footer { border-top: 1px solid #e2e8f0; padding-top: 12px; }
+        .sidebar-footer button { width: 100%; padding: 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; color: #ef4444; font-weight: 600; font-size: 12px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .main { flex: 1; margin-left: 250px; padding: 20px 24px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .top-bar h1 { font-size: 22px; font-weight: 800; }
+        .btn { padding: 9px 14px; border: none; border-radius: 7px; font-weight: 700; font-size: 11px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s; }
+        .btn-green { background: #10b981; color: #fff; }
+        .btn-green:hover { background: #059669; }
+        .btn-purple { background: #7c3aed; color: #fff; }
+        .btn-purple:hover { background: #6d28d9; }
+        .btn-orange { background: #f59e0b; color: #fff; }
+        .btn-orange:hover { background: #d97706; }
+        .btn-blue { background: #3b82f6; color: #fff; }
+        .btn-blue:hover { background: #2563eb; }
+        .btn-red { background: #ef4444; color: #fff; }
+        .btn-red:hover { background: #dc2626; }
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { text-align: left; padding: 10px 12px; font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+        td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+        tr:hover td { background: #f8fafc; }
+        .badge { padding: 3px 8px; border-radius: 5px; font-size: 9px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+        .badge.taslak { background: #f1f5f9; color: #64748b; }
+        .badge.beklemede { background: #f5f3ff; color: #7c3aed; }
+        .badge.onaylandi { background: #eff6ff; color: #3b82f6; }
+        .badge.gonderildi { background: #eff6ff; color: #3b82f6; }
+        .badge.odendi { background: #ecfdf5; color: #10b981; }
+        .badge.iptal { background: #fef2f2; color: #ef4444; }
+        .badge.gecikti { background: #fffbeb; color: #f59e0b; }
+        .badge.proforma { background: #f5f3ff; color: #7c3aed; }
+        .badge.irsaliye { background: #fff7ed; color: #ea580c; }
+        .action-btns { display: flex; gap: 4px; }
+        .action-btns button { width: 28px; height: 28px; border-radius: 5px; border: 1px solid #e2e8f0; background: #fff; color: #64748b; cursor: pointer; font-size: 11px; transition: all 0.2s; }
+        .action-btns button:hover { background: #f1f5f9; }
+        .action-btns button.del:hover { background: #fef2f2; color: #ef4444; }
+        .action-btns button.pdf:hover { background: #eff6ff; color: #3b82f6; }
+        .action-btns button.cevir:hover { background: #f5f3ff; color: #7c3aed; }
+        .empty { text-align: center; padding: 30px; color: #94a3b8; }
+        .empty i { font-size: 30px; margin-bottom: 8px; opacity: 0.5; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; }
+        .modal { background: #fff; border-radius: 16px; padding: 24px; width: 100%; max-width: 650px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.15); }
+        .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 10px; font-weight: 700; color: #64748b; margin-bottom: 4px; text-transform: uppercase; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 9px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 12px; font-family: 'Plus Jakarta Sans', sans-serif; color: #0f172a; outline: none; background: #f8fafc; }
+        .form-group input:focus, .form-group select:focus { border-color: #10b981; background: #fff; }
+        .form-group textarea { resize: vertical; min-height: 50px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+        .btn-cancel { padding: 8px 16px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; color: #64748b; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; }
+        .btn-save { padding: 8px 16px; background: #10b981; border: none; border-radius: 8px; color: #fff; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; }
+        .toplam-box { background: #f8fafc; border-radius: 10px; padding: 14px; margin-top: 8px; }
+        .toplam-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+        .toplam-row.son { border-top: 1px solid #e2e8f0; padding-top: 8px; font-weight: 800; font-size: 15px; }
+        .checkbox-group { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+        .checkbox-group input[type="checkbox"] { width: 16px; height: 16px; accent-color: #10b981; }
+        .checkbox-group label { font-size: 12px; font-weight: 600; color: #0f172a; text-transform: none; }
+        .taksit-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; padding: 8px; background: #fffbeb; border-radius: 8px; font-size: 11px; }
+        .taksit-row input { width: 100px; padding: 6px 8px; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 11px; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .sablon-renkler { display: flex; gap: 8px; }
+        .sablon-renk { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; }
+        .sablon-renk.active { border-color: #0f172a; }
+        .menu-btn { display: none; position: fixed; top: 12px; left: 12px; z-index: 200; width: 38px; height: 38px; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 16px; cursor: pointer; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; }
+        .toast { position: fixed; top: 16px; right: 16px; padding: 12px 18px; border-radius: 10px; color: #fff; font-weight: 600; font-size: 12px; z-index: 999; display: none; animation: slideIn 0.3s ease; }
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+        @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .overlay.open { display: block; }
+            .main { margin-left: 0; padding: 14px; }
+            .menu-btn { display: flex; align-items: center; justify-content: center; }
+            .form-row, .form-row-3 { grid-template-columns: 1fr; }
+            .modal { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><div class="s-icon"><i class="fa-solid fa-shop"></i></div><h2>E-İşlet<span>mem</span></h2></div>
+    <nav class="sidebar-nav">
+        <a href="dashboard.html"><i class="fa-solid fa-grid-2"></i> Dashboard</a>
+        <a href="faturalar.html" class="active"><i class="fa-solid fa-receipt"></i> Faturalar</a>
+        <a href="musteriler.html"><i class="fa-solid fa-users"></i> Müşteriler</a>
+        <a href="urunler.html"><i class="fa-solid fa-box"></i> Ürünler</a>
+        <a href="iadeler.html"><i class="fa-solid fa-rotate-left"></i> İadeler</a>
+        <a href="borc-alacak.html"><i class="fa-solid fa-scale-balanced"></i> Borç/Alacak</a>
+        <a href="kasa-defteri.html"><i class="fa-solid fa-cash-register"></i> Kasa Defteri</a>
+        <a href="tekrarlayan-fatura.html"><i class="fa-solid fa-rotate"></i> Tekrarlayan Fatura</a>
+        <a href="ibanlar.html"><i class="fa-solid fa-building-columns"></i> IBANlar</a>
+        <a href="gelir-gider.html"><i class="fa-solid fa-coins"></i> Gelir/Gider</a>
+        <a href="para-hareketleri.html"><i class="fa-solid fa-arrow-right-arrow-left"></i> Para Hareketleri</a>
+        <a href="calisanlar.html"><i class="fa-solid fa-user-tie"></i> Çalışanlar</a>
+        <a href="yedekleme.html"><i class="fa-solid fa-download"></i> Yedekleme</a>
+        <a href="kurlar.html"><i class="fa-solid fa-chart-line"></i> Canlı Kurlar</a>
+        <a href="ayarlar.html"><i class="fa-solid fa-gear"></i> Ayarlar</a>
+    </nav>
+    <div class="sidebar-footer"><button onclick="cikisYap()"><i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap</button></div>
+</aside>
+
+<main class="main">
+    <div class="top-bar">
+        <h1>📋 Faturalar</h1>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            <div id="topluIslemAlani" style="display:none;gap:6px;align-items:center;">
+                <select id="topluDurum" style="padding:8px 10px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:11px;font-family:'Plus Jakarta Sans',sans-serif;">
+                    <option value="">Durum Seç</option>
+                    <option value="odendi">Ödendi</option><option value="gonderildi">Gönderildi</option><option value="taslak">Taslak</option><option value="iptal">İptal</option><option value="gecikti">Gecikti</option>
+                </select>
+                <button class="btn btn-blue" onclick="topluDurumDegistir()">Değiştir</button>
+                <button class="btn btn-red" onclick="topluSil()"><i class="fa-solid fa-trash"></i> Sil</button>
+                <span id="seciliSayi" style="font-size:11px;color:#64748b;font-weight:600;"></span>
+            </div>
+            <button class="btn btn-purple" onclick="openModal(null, 'proforma')"><i class="fa-solid fa-file-signature"></i> Proforma</button>
+            <button class="btn btn-orange" onclick="openModal(null, 'irsaliye')"><i class="fa-solid fa-truck"></i> İrsaliye</button>
+            <button class="btn btn-green" onclick="openModal()"><i class="fa-solid fa-plus"></i> Fatura</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:30px;"><input type="checkbox" id="tumunuSec" onchange="tumunuSecToggle()" style="width:15px;height:15px;accent-color:#10b981;cursor:pointer;"></th>
+                        <th>No</th><th>Müşteri</th><th>Tutar</th><th>Ödeme</th><th>Durum</th><th>Tarih</th><th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="faturaTableBody">
+                    <tr><td colspan="8"><div class="empty"><i class="fa-solid fa-receipt"></i><p>Henüz fatura yok</p></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<div class="modal-overlay" id="modalOverlay" style="display:none;">
+    <div class="modal">
+        <h3 id="modalTitle">Yeni Fatura</h3>
+        <form id="faturaForm">
+            <input type="hidden" id="faturaId"><input type="hidden" id="faturaTipi" value="fatura"><input type="hidden" id="sablonRenk" value="#10b981">
+            <div class="form-row">
+                <div class="form-group"><label>Müşteri</label><select id="musteriSelect" required><option value="">Seçin</option></select></div>
+                <div class="form-group"><label>Para Birimi</label><select id="paraBirimi"><option value="TRY">TRY</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option></select></div>
+            </div>
+            <div class="form-group"><label>Ürün / Hizmet</label><select id="urunSelect" onchange="urunSecildi()"><option value="">Stoktan Seçin veya Yeni Ekleyin</option><option value="__yeni__">+ Yeni Ürün Ekle</option></select></div>
+            <div id="yeniUrunAlani" style="display:none;">
+                <div class="form-group"><label>Yeni Ürün Adı</label><input type="text" id="urunAdi" placeholder="Ürün veya hizmet adı"></div>
+                <div class="form-group"><label>Stoktakilere de Ekle</label><select id="stogaEkle"><option value="evet">Evet</option><option value="hayir">Hayır</option></select></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Miktar</label><input type="number" id="miktar" value="1" min="1" required></div>
+                <div class="form-group"><label>Birim Fiyat (₺)</label><input type="number" id="birimFiyat" placeholder="0.00" min="0" step="0.01" required></div>
+            </div>
+            <div class="form-row-3">
+                <div class="form-group"><label>KDV (%)</label><select id="kdvOrani"><option value="0">%0</option><option value="1">%1</option><option value="10">%10</option><option value="20" selected>%20</option></select></div>
+                <div class="form-group"><label>Ödeme Yöntemi</label><select id="odemeYontemi"><option value="Havale/EFT">Havale/EFT</option><option value="Nakit">Nakit</option><option value="Kredi Kartı">Kredi Kartı</option><option value="Banka Kartı">Banka Kartı</option><option value="Çek">Çek</option><option value="Senet">Senet</option></select></div>
+                <div class="form-group"><label>Son Ödeme</label><input type="date" id="sonOdemeTarihi"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>POS Slip No</label><input type="text" id="posSlip" placeholder="Varsa slip numarası"></div>
+                <div class="form-group"><label>Müşteri Notu</label><input type="text" id="musteriNotu" placeholder="Faturaya özel not"></div>
+            </div>
+            <div class="form-group" id="taksitAlani" style="display:none;">
+                <label>Taksit Sayısı</label>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="number" id="taksitSayisi" value="1" min="1" max="12" style="width:80px;" onchange="taksitHesapla()">
+                    <span style="font-size:11px;color:#64748b;">Taksit Tutarı: <strong id="taksitTutar">₺0</strong></span>
+                </div>
+            </div>
+            <div class="form-group"><label>Durum</label><select id="durum"><option value="taslak">Taslak</option><option value="beklemede">Beklemede</option><option value="onaylandi">Onaylandı</option><option value="gonderildi">Gönderildi</option><option value="odendi">Ödendi</option><option value="iptal">İptal</option><option value="gecikti">Gecikti</option></select></div>
+            <div class="form-group"><label>Fatura Şablonu</label>
+                <div class="sablon-renkler">
+                    <div class="sablon-renk active" style="background:#10b981;" onclick="sablonSec('#10b981', this)" title="Yeşil"></div>
+                    <div class="sablon-renk" style="background:#3b82f6;" onclick="sablonSec('#3b82f6', this)" title="Mavi"></div>
+                    <div class="sablon-renk" style="background:#7c3aed;" onclick="sablonSec('#7c3aed', this)" title="Mor"></div>
+                    <div class="sablon-renk" style="background:#f59e0b;" onclick="sablonSec('#f59e0b', this)" title="Turuncu"></div>
+                </div>
+            </div>
+            <div class="form-group"><div class="checkbox-group"><input type="checkbox" id="ibanGoster" onchange="toggleIbanSecim()"><label for="ibanGoster">IBAN gösterilsin</label></div></div>
+            <div id="ibanSecimAlani" style="display:none;"><div class="form-group"><label>IBAN Seçin</label><select id="ibanSelect"><option value="">IBAN seçin</option></select></div></div>
+            <div class="toplam-box">
+                <div class="toplam-row"><span>Ara Toplam:</span><span id="araToplam">₺0.00</span></div>
+                <div class="toplam-row"><span>KDV Toplamı:</span><span id="kdvToplami">₺0.00</span></div>
+                <div class="toplam-row son"><span>Genel Toplam:</span><span id="genelToplam">₺0.00</span></div>
+            </div>
+            <div class="modal-actions"><button type="button" class="btn-cancel" onclick="closeModal()">İptal</button><button type="submit" class="btn-save">Kaydet</button></div>
+        </form>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, getDoc, query, where, doc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = { apiKey: "AIzaSyB2UDy6nNB966e_oiU46z1l_lgW4SChpFI", authDomain: "yonetim-f485e.firebaseapp.com", projectId: "yonetim-f485e", storageBucket: "yonetim-f485e.firebasestorage.app", messagingSenderId: "699827175577", appId: "1:699827175577:web:0806bd508a82e6cbeaf808" };
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let currentUser = null;
+let faturaNoSayac = 1, proformaNoSayac = 1, irsaliyeNoSayac = 1;
+
+window.toggleMenu = function() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open'); };
+function showToast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = `toast ${type}`; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 4000); }
+
+window.sablonSec = function(renk, el) {
+    document.querySelectorAll('.sablon-renk').forEach(r => r.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('sablonRenk').value = renk;
+};
+
+function taksitHesapla() {
+    const tutar = parseFloat(document.getElementById('genelToplam').textContent.replace('₺','')) || 0;
+    const sayi = parseInt(document.getElementById('taksitSayisi').value) || 1;
+    document.getElementById('taksitTutar').textContent = '₺' + (tutar / sayi).toFixed(2);
+}
+
+onAuthStateChanged(auth, async (user) => { if (!user) { window.location.href = 'login.html'; return; } currentUser = user; await loadMusteriler(); await loadFaturalar(); });
+
+async function loadMusteriler() { const snap = await getDocs(query(collection(db, "musteriler"), where("isletmeId", "==", currentUser.uid))); const sel = document.getElementById('musteriSelect'); sel.innerHTML = '<option value="">Seçin</option>'; snap.forEach(doc => { const m = doc.data(); sel.innerHTML += `<option value="${doc.id}|${m.adSoyad}">${m.adSoyad}</option>`; }); }
+async function loadUrunlerForSelect() { const snap = await getDocs(query(collection(db, "urunler"), where("isletmeId", "==", currentUser.uid))); const sel = document.getElementById('urunSelect'); sel.innerHTML = '<option value="">Stoktan Seçin veya Yeni Ekleyin</option><option value="__yeni__">+ Yeni Ürün Ekle</option>'; snap.forEach(doc => { const u = doc.data(); sel.innerHTML += `<option value="${doc.id}">${u.urunAdi} - ₺${(u.birimFiyat||0).toFixed(2)} (Stok: ${u.stok||0})</option>`; }); }
+async function loadIbanlarForSelect() { const snap = await getDocs(query(collection(db, "ibanlar"), where("isletmeId", "==", currentUser.uid))); const sel = document.getElementById('ibanSelect'); sel.innerHTML = '<option value="">IBAN seçin</option>'; snap.forEach(doc => { const i = doc.data(); sel.innerHTML += `<option value="${doc.id}">${i.bankaAdi} - ${i.ibanNo} (${i.hesapAdi})</option>`; }); }
+
+async function loadFaturalar() {
+    const snap = await getDocs(query(collection(db, "faturalar"), where("isletmeId", "==", currentUser.uid)));
+    const tbody = document.getElementById('faturaTableBody');
+    if (snap.empty) { tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><i class="fa-solid fa-receipt"></i><p>Henüz fatura yok</p></div></td></tr>'; faturaNoSayac=1; proformaNoSayac=1; irsaliyeNoSayac=1; return; }
+    let maxF=0, maxP=0, maxI=0;
+    const allDocs = [];
+    snap.forEach(doc => { const f = doc.data(); allDocs.push({ id: doc.id, ...f }); const no = parseInt(f.faturaNo?.replace(/\D/g,'')||'0'); if (f.faturaTipi==='proforma' && no>maxP) maxP=no; else if (f.faturaTipi==='irsaliye' && no>maxI) maxI=no; else if (f.faturaTipi!=='proforma' && f.faturaTipi!=='irsaliye' && no>maxF) maxF=no; });
+    faturaNoSayac=maxF+1; proformaNoSayac=maxP+1; irsaliyeNoSayac=maxI+1;
+    allDocs.sort((a,b) => (b.createdAt?.toDate()||0) - (a.createdAt?.toDate()||0));
+const rows = [];
+allDocs.forEach(f => {
+        const tarih = f.createdAt ? f.createdAt.toDate().toLocaleDateString('tr-TR') : '-';
+        const tipBadge = f.faturaTipi==='proforma' ? '<span class="badge proforma">PROFORMA</span>' : f.faturaTipi==='irsaliye' ? '<span class="badge irsaliye">İRSALİYE</span>' : '';
+        const cevirBtn = (f.faturaTipi==='proforma' && f.durum==='onaylandi') || (f.faturaTipi==='irsaliye' && f.durum==='gonderildi') ? `<button class="cevir" onclick="belgeyiFaturayaCevir('${f.id}')" title="Faturaya Çevir"><i class="fa-solid fa-rotate"></i></button>` : '';
+        rows.push(`<tr>
+            <td><input type="checkbox" class="faturaSec" value="${f.id}" onchange="secimGuncelle()" style="width:15px;height:15px;accent-color:#10b981;cursor:pointer;"></td>
+            <td><strong>${f.faturaNo||'#'}</strong> ${tipBadge}</td>
+            <td>${f.musteriAdi||'-'}</td>
+            <td><strong>${(f.genelToplam||0).toLocaleString('tr-TR',{minimumFractionDigits:2})} ${f.paraBirimi||'TRY'}</strong></td>
+            <td>${f.odemeYontemi||'-'}</td>
+            <td><span class="badge ${f.durum||'taslak'}">${f.durum||'taslak'}</span></td>
+            <td>${tarih}</td>
+            <td><div class="action-btns">${cevirBtn}<button onclick="editFatura('${f.id}')"><i class="fa-solid fa-pen"></i></button><button class="pdf" onclick="pdfGoruntule('${f.id}')"><i class="fa-solid fa-eye"></i></button><button class="pdf" onclick="pdfIndir('${f.id}')"><i class="fa-solid fa-download"></i></button><button onclick="mailGonder('${f.id}')"><i class="fa-solid fa-envelope"></i></button><button class="del" onclick="deleteFatura('${f.id}')"><i class="fa-solid fa-trash"></i></button></div></td></tr>`);
+    });
+    tbody.innerHTML = rows.join('');
+}
+
+window.openModal = async function(fatura = null, tip = null) {
+    document.getElementById('modalOverlay').style.display = 'flex';
+    const belgeTipi = tip || fatura?.faturaTipi || 'fatura';
+    document.getElementById('faturaTipi').value = belgeTipi;
+    document.getElementById('faturaId').value = fatura?.id || '';
+    document.getElementById('modalTitle').textContent = fatura ? (belgeTipi==='proforma'?'Proforma Düzenle':belgeTipi==='irsaliye'?'İrsaliye Düzenle':'Fatura Düzenle') : (belgeTipi==='proforma'?'Yeni Proforma':belgeTipi==='irsaliye'?'Yeni İrsaliye':'Yeni Fatura');
+    document.getElementById('musteriSelect').value = fatura ? fatura.musteriId + '|' + fatura.musteriAdi : '';
+    document.getElementById('paraBirimi').value = fatura?.paraBirimi || 'TRY';
+    document.getElementById('durum').value = fatura?.durum || (belgeTipi==='proforma'?'beklemede':belgeTipi==='irsaliye'?'gonderildi':'taslak');
+    document.getElementById('odemeYontemi').value = fatura?.odemeYontemi || 'Havale/EFT';
+    document.getElementById('posSlip').value = fatura?.posSlip || '';
+    document.getElementById('musteriNotu').value = fatura?.musteriNotu || '';
+    document.getElementById('sonOdemeTarihi').value = fatura?.sonOdemeTarihi ? fatura.sonOdemeTarihi.toDate().toISOString().split('T')[0] : '';
+    document.getElementById('yeniUrunAlani').style.display = 'none';
+    document.getElementById('ibanGoster').checked = fatura?.ibanGoster || false;
+    document.getElementById('ibanSecimAlani').style.display = fatura?.ibanGoster ? 'block' : 'none';
+    document.getElementById('sablonRenk').value = fatura?.sablonRenk || '#10b981';
+    document.getElementById('taksitAlani').style.display = belgeTipi === 'fatura' ? 'block' : 'none';
+    document.getElementById('taksitSayisi').value = fatura?.taksitSayisi || 1;
+    document.querySelectorAll('.sablon-renk').forEach(r => r.classList.remove('active'));
+    const aktifRenk = fatura?.sablonRenk || '#10b981';
+    document.querySelectorAll('.sablon-renk').forEach(r => { if (r.style.background === aktifRenk) r.classList.add('active'); });
+    await loadUrunlerForSelect(); await loadIbanlarForSelect();
+    if (fatura?.ibanId) document.getElementById('ibanSelect').value = fatura.ibanId;
+    if (fatura?.kalemler?.length > 0) { const k = fatura.kalemler[0]; document.getElementById('miktar').value = k.miktar||1; document.getElementById('birimFiyat').value = k.birimFiyat||0; document.getElementById('kdvOrani').value = k.kdvOrani||20; }
+    else { document.getElementById('miktar').value=1; document.getElementById('birimFiyat').value=0; document.getElementById('kdvOrani').value=20; document.getElementById('urunSelect').value=''; }
+    hesaplaToplam();
+};
+
+window.closeModal = () => document.getElementById('modalOverlay').style.display = 'none';
+window.toggleIbanSecim = function() { document.getElementById('ibanSecimAlani').style.display = document.getElementById('ibanGoster').checked ? 'block' : 'none'; };
+
+window.urunSecildi = async function() {
+    const val = document.getElementById('urunSelect').value, yeniAlan = document.getElementById('yeniUrunAlani');
+    if (val==='__yeni__') { yeniAlan.style.display='block'; document.getElementById('urunAdi').value=''; document.getElementById('birimFiyat').value='0'; document.getElementById('kdvOrani').value='20'; }
+    else if (val==='') { yeniAlan.style.display='none'; }
+    else { yeniAlan.style.display='none'; const snap = await getDoc(doc(db,"urunler",val)); if (snap.exists()) { const u=snap.data(); document.getElementById('birimFiyat').value=u.birimFiyat||0; document.getElementById('kdvOrani').value=u.kdvOrani||20; } }
+    hesaplaToplam();
+};
+
+function hesaplaToplam() { const m=parseFloat(document.getElementById('miktar').value)||0, f=parseFloat(document.getElementById('birimFiyat').value)||0, k=parseFloat(document.getElementById('kdvOrani').value)||0, tutar=m*f, kdv=tutar*(k/100); document.getElementById('araToplam').textContent='₺'+tutar.toFixed(2); document.getElementById('kdvToplami').textContent='₺'+kdv.toFixed(2); document.getElementById('genelToplam').textContent='₺'+(tutar+kdv).toFixed(2); taksitHesapla(); }
+document.getElementById('miktar').addEventListener('input',hesaplaToplam); document.getElementById('birimFiyat').addEventListener('input',hesaplaToplam); document.getElementById('kdvOrani').addEventListener('change',hesaplaToplam);
+window.taksitHesapla = taksitHesapla;
+
+document.getElementById('faturaForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fid=document.getElementById('faturaId').value, mv=document.getElementById('musteriSelect').value;
+    if(!mv) return showToast('Müşteri seçin','error');
+    const [mid,mad]=mv.split('|'), urunSelectVal=document.getElementById('urunSelect').value, faturaTipi=document.getElementById('faturaTipi').value;
+    let urunAdi='';
+    if(urunSelectVal==='__yeni__') { urunAdi=document.getElementById('urunAdi').value.trim(); if(!urunAdi) return showToast('Ürün adı girin','error'); if(document.getElementById('stogaEkle').value==='evet') { await addDoc(collection(db,"urunler"),{urunAdi,birimFiyat:parseFloat(document.getElementById('birimFiyat').value)||0,kdvOrani:parseFloat(document.getElementById('kdvOrani').value)||0,stok:0,aciklama:'',isletmeId:currentUser.uid,createdAt:serverTimestamp()}); } }
+    else if(urunSelectVal) { const snap=await getDoc(doc(db,"urunler",urunSelectVal)); if(snap.exists()) urunAdi=snap.data().urunAdi; }
+    if(!urunAdi) return showToast('Ürün seçin veya ekleyin','error');
+    const miktar=parseFloat(document.getElementById('miktar').value)||0, birimFiyat=parseFloat(document.getElementById('birimFiyat').value)||0, kdvOrani=parseFloat(document.getElementById('kdvOrani').value)||0;
+    const tutar=miktar*birimFiyat, kdv=tutar*(kdvOrani/100), ibanGoster=document.getElementById('ibanGoster').checked, ibanId=ibanGoster?document.getElementById('ibanSelect').value:null;
+    const data={faturaTipi,musteriId:mid,musteriAdi:mad,kalemler:[{urunAdi,miktar,birimFiyat,kdvOrani}],araToplam:tutar,kdvToplami:kdv,genelToplam:tutar+kdv,paraBirimi:document.getElementById('paraBirimi').value,odemeYontemi:document.getElementById('odemeYontemi').value,posSlip:document.getElementById('posSlip').value.trim(),musteriNotu:document.getElementById('musteriNotu').value.trim(),durum:document.getElementById('durum').value,sablonRenk:document.getElementById('sablonRenk').value,sonOdemeTarihi:document.getElementById('sonOdemeTarihi').value?new Date(document.getElementById('sonOdemeTarihi').value):null,ibanGoster,ibanId,taksitSayisi:parseInt(document.getElementById('taksitSayisi').value)||1,isletmeId:currentUser.uid,updatedAt:serverTimestamp()};
+    try {
+        if(fid) { await updateDoc(doc(db,"faturalar",fid),data); showToast('Güncellendi','success'); }
+        else {
+            if(faturaTipi==='proforma') data.faturaNo='PRO-'+String(proformaNoSayac).padStart(5,'0');
+            else if(faturaTipi==='irsaliye') data.faturaNo='IRS-'+String(irsaliyeNoSayac).padStart(5,'0');
+            else data.faturaNo='FAT-'+String(faturaNoSayac).padStart(5,'0');
+            data.createdAt=serverTimestamp();
+            await addDoc(collection(db,"faturalar"),data);
+            if(urunSelectVal && urunSelectVal!=='__yeni__' && faturaTipi!=='proforma') { const urunRef=doc(db,"urunler",urunSelectVal); const urunSnap=await getDoc(urunRef); if(urunSnap.exists()) { await updateDoc(urunRef,{stok:Math.max(0,(urunSnap.data().stok||0)-miktar)}); } }
+            showToast(faturaTipi==='proforma'?'Proforma oluşturuldu':faturaTipi==='irsaliye'?'İrsaliye oluşturuldu':'Fatura oluşturuldu','success');
+        }
+        closeModal(); await loadFaturalar();
+    } catch(err) { showToast('Hata: '+err.message,'error'); }
+});
+
+window.belgeyiFaturayaCevir = async function(id) {
+    const snap=await getDoc(doc(db,"faturalar",id)); if(!snap.exists()) return;
+    const f=snap.data();
+    if(!confirm('Bu belgeyi faturaya dönüştürmek istediğinize emin misiniz?')) return;
+    const yeniNo='FAT-'+String(faturaNoSayac).padStart(5,'0');
+    await updateDoc(doc(db,"faturalar",id),{faturaTipi:'fatura',faturaNo:yeniNo,durum:'gonderildi',updatedAt:serverTimestamp()});
+    if(f.faturaTipi==='proforma') { const urunSnap=await getDocs(query(collection(db,"urunler"),where("isletmeId","==",currentUser.uid))); urunSnap.forEach(async(uDoc)=>{ const u=uDoc.data(); (f.kalemler||[]).forEach(k=>{ if(u.urunAdi===k.urunAdi && k.miktar){ updateDoc(doc(db,"urunler",uDoc.id),{stok:Math.max(0,(u.stok||0)-(k.miktar||0))}); } }); }); }
+    showToast('Faturaya dönüştürüldü','success'); await loadFaturalar();
+};
+
+window.editFatura = async function(id) { const snap=await getDoc(doc(db,"faturalar",id)); if(snap.exists()) openModal({id,...snap.data()}); };
+window.deleteFatura = async function(id) { if(!confirm('Silinsin mi?')) return; await deleteDoc(doc(db,"faturalar",id)); showToast('Silindi','success'); await loadFaturalar(); };
+
+window.pdfGoruntule = async function(id) {
+    const snap=await getDoc(doc(db,"faturalar",id)); if(!snap.exists()) return;
+    const f=snap.data(), isSnap=await getDoc(doc(db,"isletmeler",currentUser.uid)), isletme=isSnap.data()||{};
+    const k=(f.kalemler||[])[0]||{}, tutar=(k.miktar||0)*(k.birimFiyat||0);
+    const renk = f.sablonRenk || '#10b981';
+    const isProforma=f.faturaTipi==='proforma', isIrsaliye=f.faturaTipi==='irsaliye';
+    const baslik=isProforma?'PROFORMA FATURA':isIrsaliye?'İRSALİYE':'FATURA';
+    let ibanHtml='';
+    if(f.ibanGoster && f.ibanId){ const ibanSnap=await getDoc(doc(db,"ibanlar",f.ibanId)); if(ibanSnap.exists()){ const iban=ibanSnap.data(); ibanHtml=`<div style="margin-top:16px;padding:12px;background:#f8fafc;border-radius:8px;font-size:11px;"><strong>Banka:</strong><br>${iban.bankaAdi}<br>IBAN: ${iban.ibanNo}<br>Hesap: ${iban.hesapAdi}</div>`; } }
+    const win=window.open('','_blank','width=800,height=600');
+    win.document.write(`<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8"><title>${baslik} ${f.faturaNo}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;padding:40px;color:#0f172a}.header{display:flex;justify-content:space-between;border-bottom:2px solid ${renk};padding-bottom:20px;margin-bottom:30px}.header h1{font-size:26px;color:${renk}}.info-grid{display:flex;justify-content:space-between;margin-bottom:30px;font-size:14px;line-height:1.8}table{width:100%;border-collapse:collapse;margin-bottom:30px}th{background:${renk};color:#fff;padding:10px;text-align:left;font-size:12px}td{padding:10px;border-bottom:1px solid #e2e8f0;font-size:13px}.totals{text-align:right;font-size:14px;line-height:2}.grand{font-size:18px;font-weight:800;color:${renk};border-top:2px solid #0f172a;padding-top:10px;margin-top:10px}.footer{margin-top:20px;text-align:center;font-size:11px;color:#94a3b8;border-top:1px solid #e2e8f0;padding-top:16px}.uyari{color:#ef4444;font-weight:700;font-size:12px;margin-bottom:16px;text-align:center}@media print{body{print-color-adjust:exact}}</style></head><body>
+    <div class="header"><div>${isletme.logoURL?`<img src="${isletme.logoURL}" style="max-height:50px;margin-bottom:8px;"><br>`:''}<h1>${baslik}</h1><p style="color:#64748b;">${f.faturaNo}</p></div><div style="text-align:right;font-size:13px;color:#64748b;"><strong>${isletme.isletmeAdi||''}</strong><br>${isletme.adres||''}<br>${isletme.telefon||''}<br>${isletme.email||''}</div></div>
+    ${(isProforma||isIrsaliye)?`<div class="uyari">⚠ Bu belge ${isProforma?'proforma faturadır':'irsaliyedir'}, resmi fatura yerine geçmez.</div>`:''}
+    ${f.musteriNotu?`<div style="background:#fffbeb;padding:8px 12px;border-radius:6px;margin-bottom:16px;font-size:12px;"><strong>Not:</strong> ${f.musteriNotu}</div>`:''}
+    <div class="info-grid"><div><strong>Müşteri:</strong><br>${f.musteriAdi}</div><div><strong>Tarih:</strong> ${f.createdAt?.toDate().toLocaleDateString('tr-TR')||'-'}<br><strong>Vade:</strong> ${f.sonOdemeTarihi?.toDate().toLocaleDateString('tr-TR')||'-'}<br><strong>Ödeme:</strong> ${f.odemeYontemi||'-'}${f.posSlip?`<br><strong>POS:</strong> ${f.posSlip}`:''}<br><strong>Durum:</strong> ${f.durum}</div></div>
+    <table><thead><tr><th>Ürün/Hizmet</th><th>Miktar</th><th>Birim Fiyat</th><th>KDV</th><th>Tutar</th></tr></thead><tbody><tr><td>${k.urunAdi||'-'}</td><td>${k.miktar||0}</td><td>₺${(k.birimFiyat||0).toFixed(2)}</td><td>%${k.kdvOrani||0}</td><td>₺${tutar.toFixed(2)}</td></tr></tbody></table>
+    <div class="totals"><div>Ara Toplam: ₺${(f.araToplam||0).toFixed(2)}</div><div>KDV: ₺${(f.kdvToplami||0).toFixed(2)}</div><div class="grand">Genel Toplam: ₺${(f.genelToplam||0).toFixed(2)} ${f.paraBirimi||'TRY'}</div></div>
+    ${f.taksitSayisi>1?`<div style="margin-top:12px;padding:10px;background:#f8fafc;border-radius:8px;font-size:11px;"><strong>${f.taksitSayisi} Taksit:</strong> Her taksit ₺${((f.genelToplam||0)/(f.taksitSayisi||1)).toFixed(2)}</div>`:''}
+    ${ibanHtml}
+    <div style="text-align:center;margin-top:20px;"><img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Fatura:${f.faturaNo},Tutar:${f.genelToplam}${f.paraBirimi||'TRY'},Musteri:${f.musteriAdi}" style="width:80px;height:80px;"><p style="font-size:9px;color:#94a3b8;">Karekod</p></div>
+    <div class="footer">E-İşletmem</div><script>window.onload=function(){window.print()}<\/script></body></html>`);
+    win.document.close();
+};
+
+window.pdfIndir = async function(id) {
+    const snap=await getDoc(doc(db,"faturalar",id)); if(!snap.exists()) return;
+    const f=snap.data(), isSnap=await getDoc(doc(db,"isletmeler",currentUser.uid)), isletme=isSnap.data()||{};
+    const k=(f.kalemler||[])[0]||{}, tutar=(k.miktar||0)*(k.birimFiyat||0), renk=f.sablonRenk||'#10b981';
+    const isProforma=f.faturaTipi==='proforma', isIrsaliye=f.faturaTipi==='irsaliye', baslik=isProforma?'PROFORMA':isIrsaliye?'IRSALIYE':'FATURA';
+    let ibanHtml=''; if(f.ibanGoster && f.ibanId){ const ibanSnap=await getDoc(doc(db,"ibanlar",f.ibanId)); if(ibanSnap.exists()){ const iban=ibanSnap.data(); ibanHtml=`<div style="margin-top:16px;padding:12px;background:#f8fafc;border-radius:8px;font-size:11px;"><strong>Banka:</strong><br>${iban.bankaAdi}<br>IBAN: ${iban.ibanNo}<br>Hesap: ${iban.hesapAdi}</div>`; } }
+    const html = `<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8"><title>${baslik} ${f.faturaNo}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;padding:40px;color:#0f172a}.header{display:flex;justify-content:space-between;border-bottom:2px solid ${renk};padding-bottom:20px;margin-bottom:30px}.header h1{font-size:26px;color:${renk}}.info-grid{display:flex;justify-content:space-between;margin-bottom:30px;font-size:14px;line-height:1.8}table{width:100%;border-collapse:collapse;margin-bottom:30px}th{background:${renk};color:#fff;padding:10px;text-align:left;font-size:12px}td{padding:10px;border-bottom:1px solid #e2e8f0;font-size:13px}.totals{text-align:right;font-size:14px;line-height:2}.grand{font-size:18px;font-weight:800;color:${renk};border-top:2px solid #0f172a;padding-top:10px;margin-top:10px}.footer{margin-top:20px;text-align:center;font-size:11px;color:#94a3b8;border-top:1px solid #e2e8f0;padding-top:16px}.uyari{color:#ef4444;font-weight:700;font-size:12px;margin-bottom:16px;text-align:center}@media print{body{print-color-adjust:exact}}</style></head><body>
+    <div class="header"><div>${isletme.logoURL?`<img src="${isletme.logoURL}" style="max-height:50px;margin-bottom:8px;"><br>`:''}<h1>${baslik}</h1><p style="color:#64748b;">${f.faturaNo}</p></div><div style="text-align:right;font-size:13px;color:#64748b;"><strong>${isletme.isletmeAdi||''}</strong><br>${isletme.adres||''}<br>${isletme.telefon||''}<br>${isletme.email||''}</div></div>
+    ${(isProforma||isIrsaliye)?`<div class="uyari">⚠ Bu belge ${isProforma?'proforma faturadır':'irsaliyedir'}, resmi fatura yerine geçmez.</div>`:''}
+    ${f.musteriNotu?`<div style="background:#fffbeb;padding:8px 12px;border-radius:6px;margin-bottom:16px;font-size:12px;"><strong>Not:</strong> ${f.musteriNotu}</div>`:''}
+    <div class="info-grid"><div><strong>Müşteri:</strong><br>${f.musteriAdi}</div><div><strong>Tarih:</strong> ${f.createdAt?.toDate().toLocaleDateString('tr-TR')||'-'}<br><strong>Vade:</strong> ${f.sonOdemeTarihi?.toDate().toLocaleDateString('tr-TR')||'-'}<br><strong>Ödeme:</strong> ${f.odemeYontemi||'-'}${f.posSlip?`<br><strong>POS:</strong> ${f.posSlip}`:''}<br><strong>Durum:</strong> ${f.durum}</div></div>
+    <table><thead><tr><th>Ürün/Hizmet</th><th>Miktar</th><th>Birim Fiyat</th><th>KDV</th><th>Tutar</th></tr></thead><tbody><tr><td>${k.urunAdi||'-'}</td><td>${k.miktar||0}</td><td>₺${(k.birimFiyat||0).toFixed(2)}</td><td>%${k.kdvOrani||0}</td><td>₺${tutar.toFixed(2)}</td></tr></tbody></table>
+    <div class="totals"><div>Ara Toplam: ₺${(f.araToplam||0).toFixed(2)}</div><div>KDV: ₺${(f.kdvToplami||0).toFixed(2)}</div><div class="grand">Genel Toplam: ₺${(f.genelToplam||0).toFixed(2)} ${f.paraBirimi||'TRY'}</div></div>
+    ${f.taksitSayisi>1?`<div style="margin-top:12px;padding:10px;background:#f8fafc;border-radius:8px;font-size:11px;"><strong>${f.taksitSayisi} Taksit:</strong> Her taksit ₺${((f.genelToplam||0)/(f.taksitSayisi||1)).toFixed(2)}</div>`:''}
+    ${ibanHtml}
+    <div style="text-align:center;margin-top:20px;"><img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Fatura:${f.faturaNo},Tutar:${f.genelToplam}${f.paraBirimi||'TRY'},Musteri:${f.musteriAdi}" style="width:80px;height:80px;"><p style="font-size:9px;color:#94a3b8;">Karekod</p></div>
+    <div class="footer">E-İşletmem</div></body></html>`;
+    const blob = new Blob([html], { type: 'text/html' }), url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download=`${baslik}_${f.faturaNo}.html`; a.click(); URL.revokeObjectURL(url);
+    showToast('İndirildi','success');
+};
+
+window.mailGonder = async function(id) { const snap=await getDoc(doc(db,"faturalar",id)); if(!snap.exists()) return; const f=snap.data(); const musteriSnap=await getDocs(query(collection(db,"musteriler"),where("isletmeId","==",currentUser.uid))); let musteriEmail=''; musteriSnap.forEach(doc=>{ if(doc.id===f.musteriId) musteriEmail=doc.data().email; }); if(!musteriEmail) return showToast('Müşteri emaili yok','error'); window.open(`mailto:${musteriEmail}?subject=${f.faturaTipi==='proforma'?'Proforma':f.faturaTipi==='irsaliye'?'İrsaliye':'Fatura'} ${f.faturaNo}&body=Sayın ${f.musteriAdi},%0D%0A%0D%0A${f.faturaNo} nolu belge.%0D%0ATutar: ${(f.genelToplam||0).toLocaleString('tr-TR')} ${f.paraBirimi||'TRY'}%0D%0AVade: ${f.sonOdemeTarihi?.toDate().toLocaleDateString('tr-TR')||'-'}`, '_blank'); showToast('Mail açıldı','success'); };
+
+window.tumunuSecToggle = function() { document.querySelectorAll('.faturaSec').forEach(cb=>cb.checked=document.getElementById('tumunuSec').checked); secimGuncelle(); };
+window.secimGuncelle = function() { const secili=document.querySelectorAll('.faturaSec:checked').length; document.getElementById('topluIslemAlani').style.display=secili>0?'flex':'none'; document.getElementById('seciliSayi').textContent=secili+' fatura seçildi'; };
+window.topluDurumDegistir = async function() { const durum=document.getElementById('topluDurum').value; if(!durum) return showToast('Durum seçin','error'); const secili=document.querySelectorAll('.faturaSec:checked'); if(secili.length===0) return showToast('Fatura seçin','error'); for(const cb of secili){ await updateDoc(doc(db,"faturalar",cb.value),{durum,updatedAt:serverTimestamp()}); } showToast(secili.length+' fatura güncellendi','success'); await loadFaturalar(); };
+window.topluSil = async function() { const secili=document.querySelectorAll('.faturaSec:checked'); if(secili.length===0) return showToast('Fatura seçin','error'); if(!confirm(secili.length+' fatura silinecek. Emin misiniz?')) return; for(const cb of secili){ await deleteDoc(doc(db,"faturalar",cb.value)); } showToast(secili.length+' fatura silindi','success'); await loadFaturalar(); };
+window.cikisYap = async () => { await signOut(auth); window.location.href = 'login.html'; };
+</script>
+</body>
+</html>
