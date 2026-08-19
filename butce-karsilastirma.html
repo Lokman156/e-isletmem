@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bütçe Karşılaştırma - E-İşletmem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color: #0f172a; display: flex; min-height: 100vh; }
+        .sidebar { width: 250px; background: #fff; border-right: 1px solid #e2e8f0; padding: 20px 14px; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; display: flex; flex-direction: column; transition: transform 0.3s; }
+        .sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 0 8px; margin-bottom: 28px; }
+        .sidebar-logo .s-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; }
+        .sidebar-logo h2 { font-size: 17px; font-weight: 800; }
+        .sidebar-logo span { color: #10b981; }
+        .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: #64748b; text-decoration: none; font-weight: 600; font-size: 12px; transition: all 0.2s; }
+        .sidebar-nav a:hover { background: #f1f5f9; color: #0f172a; }
+        .sidebar-nav a.active { background: #eff6ff; color: #3b82f6; font-weight: 700; }
+        .sidebar-footer { border-top: 1px solid #e2e8f0; padding-top: 12px; }
+        .sidebar-footer button { width: 100%; padding: 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; color: #ef4444; font-weight: 600; font-size: 12px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .main { flex: 1; margin-left: 250px; padding: 20px 24px; }
+        .top-bar { margin-bottom: 20px; }
+        .top-bar h1 { font-size: 22px; font-weight: 800; }
+        .top-bar p { color: #64748b; font-size: 12px; margin-top: 2px; }
+        .summary-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .summary-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; text-align: center; }
+        .summary-card .lbl { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
+        .summary-card .val { font-size: 20px; font-weight: 800; }
+        .val.green { color: #10b981; }
+        .val.red { color: #ef4444; }
+        .val.blue { color: #3b82f6; }
+        .change { font-size: 11px; font-weight: 700; margin-top: 2px; }
+        .change.up { color: #10b981; }
+        .change.down { color: #ef4444; }
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; }
+        .card-header { margin-bottom: 14px; }
+        .card-header h3 { font-size: 14px; font-weight: 700; }
+        .chart-wrap { height: 200px; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { text-align: left; padding: 10px 12px; font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+        td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+        .empty { text-align: center; padding: 30px; color: #94a3b8; }
+        .empty i { font-size: 30px; margin-bottom: 8px; opacity: 0.5; }
+        .menu-btn { display: none; position: fixed; top: 12px; left: 12px; z-index: 200; width: 38px; height: 38px; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 16px; cursor: pointer; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; }
+        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); } .overlay.open { display: block; } .main { margin-left: 0; padding: 14px; } .menu-btn { display: flex; align-items: center; justify-content: center; } .summary-cards { grid-template-columns: 1fr; } .charts-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><div class="s-icon"><i class="fa-solid fa-shop"></i></div><h2>E-İşlet<span>mem</span></h2></div>
+    <nav class="sidebar-nav">
+        <a href="dashboard.html"><i class="fa-solid fa-grid-2"></i> Dashboard</a>
+        <a href="faturalar.html"><i class="fa-solid fa-receipt"></i> Faturalar</a>
+        <a href="musteriler.html"><i class="fa-solid fa-users"></i> Müşteriler</a>
+        <a href="urunler.html"><i class="fa-solid fa-box"></i> Ürünler</a>
+        <a href="iadeler.html"><i class="fa-solid fa-rotate-left"></i> İadeler</a>
+        <a href="stok-hareketleri.html"><i class="fa-solid fa-arrows-spin"></i> Stok Hareketleri</a>
+        <a href="musteri-yaslandirma.html"><i class="fa-solid fa-chart-pie"></i> Müşteri Yaşlandırma</a>
+        <a href="nakit-akisi.html"><i class="fa-solid fa-money-bill-trend-up"></i> Nakit Akışı</a>
+        <a href="butce-karsilastirma.html" class="active"><i class="fa-solid fa-scale-balanced"></i> Bütçe Karşılaştırma</a>
+        <a href="stok-degerleme.html"><i class="fa-solid fa-coins"></i> Stok Değerleme</a>
+        <a href="borc-alacak.html"><i class="fa-solid fa-scale-balanced"></i> Borç/Alacak</a>
+        <a href="kasa-defteri.html"><i class="fa-solid fa-cash-register"></i> Kasa Defteri</a>
+        <a href="tekrarlayan-fatura.html"><i class="fa-solid fa-rotate"></i> Tekrarlayan Fatura</a>
+        <a href="ibanlar.html"><i class="fa-solid fa-building-columns"></i> IBANlar</a>
+        <a href="gelir-gider.html"><i class="fa-solid fa-coins"></i> Gelir/Gider</a>
+        <a href="para-hareketleri.html"><i class="fa-solid fa-arrow-right-arrow-left"></i> Para Hareketleri</a>
+        <a href="calisanlar.html"><i class="fa-solid fa-user-tie"></i> Çalışanlar</a>
+        <a href="yedekleme.html"><i class="fa-solid fa-download"></i> Yedekleme</a>
+        <a href="kurlar.html"><i class="fa-solid fa-chart-line"></i> Canlı Kurlar</a>
+        <a href="ayarlar.html"><i class="fa-solid fa-gear"></i> Ayarlar</a>
+    </nav>
+    <div class="sidebar-footer"><button onclick="cikisYap()"><i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap</button></div>
+</aside>
+
+<main class="main">
+    <div class="top-bar"><h1>📊 Bütçe Karşılaştırma</h1><p>Bu ay ile geçen ayın karşılaştırması</p></div>
+
+    <div class="summary-cards">
+        <div class="summary-card">
+            <div class="lbl">Bu Ay Gelir</div>
+            <div class="val green" id="buAyGelir">₺0</div>
+            <div class="change" id="gelirDegisim"></div>
+        </div>
+        <div class="summary-card">
+            <div class="lbl">Bu Ay Gider</div>
+            <div class="val red" id="buAyGider">₺0</div>
+            <div class="change" id="giderDegisim"></div>
+        </div>
+        <div class="summary-card">
+            <div class="lbl">Net Kar</div>
+            <div class="val blue" id="buAyKar">₺0</div>
+            <div class="change" id="karDegisim"></div>
+        </div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="card"><div class="card-header"><h3>Gelir Karşılaştırması</h3></div><div class="chart-wrap"><canvas id="gelirChart"></canvas></div></div>
+        <div class="card"><div class="card-header"><h3>Gider Karşılaştırması</h3></div><div class="chart-wrap"><canvas id="giderChart"></canvas></div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><h3>📋 Kategori Bazlı Karşılaştırma</h3></div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Kategori</th><th>Bu Ay</th><th>Geçen Ay</th><th>Değişim</th></tr></thead>
+                <tbody id="kategoriBody"><tr><td colspan="4"><div class="empty"><i class="fa-solid fa-scale-balanced"></i><p>Veri yok</p></div></td></tr></tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = { apiKey: "AIzaSyB2UDy6nNB966e_oiU46z1l_lgW4SChpFI", authDomain: "yonetim-f485e.firebaseapp.com", projectId: "yonetim-f485e", storageBucket: "yonetim-f485e.firebasestorage.app", messagingSenderId: "699827175577", appId: "1:699827175577:web:0806bd508a82e6cbeaf808" };
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let currentUser = null;
+let gelirChart, giderChart;
+
+window.toggleMenu = function() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open'); };
+
+onAuthStateChanged(auth, async (user) => { if (!user) { window.location.href = 'login.html'; return; } currentUser = user; await loadKarsilastirma(); });
+
+async function loadKarsilastirma() {
+    const now = new Date();
+    const buAy = new Date(now.getFullYear(), now.getMonth(), 1);
+    const gecenAy = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const gecenAySon = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    const ggSnap = await getDocs(query(collection(db, "gelir_gider"), where("isletmeId", "==", currentUser.uid)));
+    
+    let buAyGelir = 0, buAyGider = 0, gecenAyGelir = 0, gecenAyGider = 0;
+    const buAyKat = {}, gecenAyKat = {};
+
+    ggSnap.forEach(doc => {
+        const g = doc.data();
+        const tarih = g.tarih?.toDate() || g.createdAt?.toDate();
+        if (!tarih) return;
+        const kat = g.kategori || 'Diğer';
+
+        if (tarih >= buAy) {
+            if (g.tur === 'gelir') { buAyGelir += g.tutar || 0; buAyKat[kat] = (buAyKat[kat] || 0) + (g.tutar || 0); }
+            else { buAyGider += g.tutar || 0; buAyKat[kat] = (buAyKat[kat] || 0) + (g.tutar || 0); }
+        } else if (tarih >= gecenAy && tarih <= gecenAySon) {
+            if (g.tur === 'gelir') { gecenAyGelir += g.tutar || 0; gecenAyKat[kat] = (gecenAyKat[kat] || 0) + (g.tutar || 0); }
+            else { gecenAyGider += g.tutar || 0; gecenAyKat[kat] = (gecenAyKat[kat] || 0) + (g.tutar || 0); }
+        }
+    });
+
+    const buAyKar = buAyGelir - buAyGider;
+    const gecenAyKar = gecenAyGelir - gecenAyGider;
+
+    document.getElementById('buAyGelir').textContent = '₺' + buAyGelir.toLocaleString('tr-TR');
+    document.getElementById('buAyGider').textContent = '₺' + buAyGider.toLocaleString('tr-TR');
+    document.getElementById('buAyKar').textContent = '₺' + buAyKar.toLocaleString('tr-TR');
+
+    const gelirDeg = gecenAyGelir > 0 ? ((buAyGelir - gecenAyGelir) / gecenAyGelir * 100) : 0;
+    const giderDeg = gecenAyGider > 0 ? ((buAyGider - gecenAyGider) / gecenAyGider * 100) : 0;
+    const karDeg = gecenAyKar !== 0 ? ((buAyKar - gecenAyKar) / Math.abs(gecenAyKar) * 100) : 0;
+
+    document.getElementById('gelirDegisim').innerHTML = `<span class="change ${gelirDeg>=0?'up':'down'}">${gelirDeg>=0?'↑':'↓'} %${Math.abs(gelirDeg).toFixed(1)}</span>`;
+    document.getElementById('giderDegisim').innerHTML = `<span class="change ${giderDeg<=0?'up':'down'}">${giderDeg<=0?'↓':'↑'} %${Math.abs(giderDeg).toFixed(1)}</span>`;
+    document.getElementById('karDegisim').innerHTML = `<span class="change ${karDeg>=0?'up':'down'}">${karDeg>=0?'↑':'↓'} %${Math.abs(karDeg).toFixed(1)}</span>`;
+
+    // Grafikler
+    setTimeout(() => {
+        const ctx1 = document.getElementById('gelirChart')?.getContext('2d');
+        if (ctx1) {
+            if (gelirChart) gelirChart.destroy();
+            gelirChart = new Chart(ctx1, { type: 'bar', data: { labels: ['Geçen Ay', 'Bu Ay'], datasets: [{ label: 'Gelir', data: [gecenAyGelir, buAyGelir], backgroundColor: ['#3b82f6', '#10b981'], borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+        }
+        const ctx2 = document.getElementById('giderChart')?.getContext('2d');
+        if (ctx2) {
+            if (giderChart) giderChart.destroy();
+            giderChart = new Chart(ctx2, { type: 'bar', data: { labels: ['Geçen Ay', 'Bu Ay'], datasets: [{ label: 'Gider', data: [gecenAyGider, buAyGider], backgroundColor: ['#f97316', '#ef4444'], borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+        }
+    }, 300);
+
+    // Kategori tablosu
+    const tumKat = new Set([...Object.keys(buAyKat), ...Object.keys(gecenAyKat)]);
+    const rows = [];
+    tumKat.forEach(kat => {
+        const bu = buAyKat[kat] || 0;
+        const gecen = gecenAyKat[kat] || 0;
+        const deg = gecen > 0 ? ((bu - gecen) / gecen * 100) : 100;
+        rows.push({ kat, bu, gecen, deg });
+    });
+    rows.sort((a,b) => b.bu - a.bu);
+
+    const tbody = document.getElementById('kategoriBody');
+    if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="4"><div class="empty"><i class="fa-solid fa-scale-balanced"></i><p>Veri yok</p></div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => `<tr>
+        <td><strong>${r.kat}</strong></td>
+        <td>₺${r.bu.toLocaleString('tr-TR')}</td>
+        <td>₺${r.gecen.toLocaleString('tr-TR')}</td>
+        <td class="${r.deg>=0?'giris':'cikis'}">${r.deg>=0?'↑':'↓'} %${Math.abs(r.deg).toFixed(1)}</td>
+    </tr>`).join('');
+}
+
+window.cikisYap = async () => { await signOut(auth); window.location.href = 'login.html'; };
+</script>
+</body>
+</html>
