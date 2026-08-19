@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayarlar - E-İşletmem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color: #0f172a; display: flex; min-height: 100vh; }
+        .sidebar { width: 250px; background: #fff; border-right: 1px solid #e2e8f0; padding: 20px 14px; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; display: flex; flex-direction: column; transition: transform 0.3s; }
+        .sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 0 8px; margin-bottom: 28px; }
+        .sidebar-logo .s-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; }
+        .sidebar-logo h2 { font-size: 17px; font-weight: 800; }
+        .sidebar-logo span { color: #10b981; }
+        .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: #64748b; text-decoration: none; font-weight: 600; font-size: 12px; transition: all 0.2s; }
+        .sidebar-nav a:hover { background: #f1f5f9; color: #0f172a; }
+        .sidebar-nav a.active { background: #f5f3ff; color: #7c3aed; font-weight: 700; }
+        .sidebar-footer { border-top: 1px solid #e2e8f0; padding-top: 12px; }
+        .sidebar-footer button { width: 100%; padding: 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; color: #ef4444; font-weight: 600; font-size: 12px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .main { flex: 1; margin-left: 250px; padding: 20px 24px; }
+        .top-bar { margin-bottom: 20px; }
+        .top-bar h1 { font-size: 22px; font-weight: 800; }
+        .top-bar p { color: #64748b; font-size: 12px; margin-top: 2px; }
+        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; }
+        .card.full { grid-column: 1 / -1; }
+        .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid #f1f5f9; }
+        .card-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .card-icon.green { background: #ecfdf5; color: #10b981; }
+        .card-icon.blue { background: #eff6ff; color: #3b82f6; }
+        .card-icon.purple { background: #f5f3ff; color: #7c3aed; }
+        .card-icon.red { background: #fef2f2; color: #ef4444; }
+        .card-icon.orange { background: #fffbeb; color: #f59e0b; }
+        .card-header h3 { font-size: 14px; font-weight: 700; }
+        .card-header span { font-size: 10px; color: #94a3b8; display: block; margin-top: 1px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 10px; font-weight: 700; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 9px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 12px; font-family: 'Plus Jakarta Sans', sans-serif; color: #0f172a; outline: none; background: #f8fafc; transition: all 0.2s; resize: vertical; }
+        .form-group input:focus, .form-group select:focus { border-color: #7c3aed; background: #fff; box-shadow: 0 0 0 3px rgba(124,58,237,0.06); }
+        .form-group input:disabled { opacity: 0.6; background: #f1f5f9; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .logo-area { display: flex; align-items: center; gap: 14px; }
+        .logo-preview { width: 70px; height: 70px; border-radius: 12px; border: 2px dashed #e2e8f0; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; background: #f8fafc; }
+        .logo-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .logo-preview i { font-size: 24px; color: #94a3b8; }
+        .logo-info p { font-size: 11px; color: #64748b; margin-bottom: 6px; }
+        .btn { padding: 8px 14px; border-radius: 7px; font-weight: 700; font-size: 11px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s; border: none; }
+        .btn-outline { background: #fff; border: 1.5px solid #e2e8f0; color: #0f172a; }
+        .btn-outline:hover { background: #f1f5f9; }
+        .btn-save { background: #7c3aed; color: #fff; }
+        .btn-save:hover { background: #6d28d9; }
+        .btn-save.green { background: #10b981; }
+        .btn-save.green:hover { background: #059669; }
+        .btn-danger { background: #fff; border: 1px solid #fecaca; color: #ef4444; }
+        .btn-danger:hover { background: #fef2f2; }
+        .logo-status { font-size: 10px; margin-top: 4px; display: block; }
+        .log-list { max-height: 300px; overflow-y: auto; }
+        .log-item { padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 11px; display: flex; gap: 8px; }
+        .log-item .log-time { color: #94a3b8; white-space: nowrap; font-size: 10px; }
+        .menu-btn { display: none; position: fixed; top: 12px; left: 12px; z-index: 200; width: 38px; height: 38px; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 16px; cursor: pointer; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; }
+        .toast { position: fixed; top: 16px; right: 16px; padding: 12px 18px; border-radius: 10px; color: #fff; font-weight: 600; font-size: 12px; z-index: 999; display: none; animation: slideIn 0.3s ease; }
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+        @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); } .overlay.open { display: block; } .main { margin-left: 0; padding: 14px; } .menu-btn { display: flex; align-items: center; justify-content: center; } .settings-grid { grid-template-columns: 1fr; } .form-row { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><div class="s-icon"><i class="fa-solid fa-shop"></i></div><h2>E-İşlet<span>mem</span></h2></div>
+    <nav class="sidebar-nav">
+        <a href="dashboard.html"><i class="fa-solid fa-grid-2"></i> Dashboard</a>
+        <a href="faturalar.html"><i class="fa-solid fa-receipt"></i> Faturalar</a>
+        <a href="musteriler.html"><i class="fa-solid fa-users"></i> Müşteriler</a>
+        <a href="urunler.html"><i class="fa-solid fa-box"></i> Ürünler</a>
+        <a href="iadeler.html"><i class="fa-solid fa-rotate-left"></i> İadeler</a>
+        <a href="stok-hareketleri.html"><i class="fa-solid fa-arrows-spin"></i> Stok Hareketleri</a>
+        <a href="musteri-yaslandirma.html"><i class="fa-solid fa-chart-pie"></i> Müşteri Yaşlandırma</a>
+        <a href="nakit-akisi.html"><i class="fa-solid fa-money-bill-trend-up"></i> Nakit Akışı</a>
+        <a href="butce-karsilastirma.html"><i class="fa-solid fa-scale-balanced"></i> Bütçe Karşılaştırma</a>
+        <a href="stok-degerleme.html"><i class="fa-solid fa-coins"></i> Stok Değerleme</a>
+        <a href="borc-alacak.html"><i class="fa-solid fa-scale-balanced"></i> Borç/Alacak</a>
+        <a href="kasa-defteri.html"><i class="fa-solid fa-cash-register"></i> Kasa Defteri</a>
+        <a href="tekrarlayan-fatura.html"><i class="fa-solid fa-rotate"></i> Tekrarlayan Fatura</a>
+        <a href="ibanlar.html"><i class="fa-solid fa-building-columns"></i> IBANlar</a>
+        <a href="gelir-gider.html"><i class="fa-solid fa-coins"></i> Gelir/Gider</a>
+        <a href="para-hareketleri.html"><i class="fa-solid fa-arrow-right-arrow-left"></i> Para Hareketleri</a>
+        <a href="calisanlar.html"><i class="fa-solid fa-user-tie"></i> Çalışanlar</a>
+        <a href="yedekleme.html"><i class="fa-solid fa-download"></i> Yedekleme</a>
+        <a href="kurlar.html"><i class="fa-solid fa-chart-line"></i> Canlı Kurlar</a>
+        <a href="ayarlar.html" class="active"><i class="fa-solid fa-gear"></i> Ayarlar</a>
+    </nav>
+    <div class="sidebar-footer"><button onclick="cikisYap()"><i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap</button></div>
+</aside>
+
+<main class="main">
+    <div class="top-bar"><h1>⚙️ Ayarlar</h1><p>İşletme bilgilerinizi ve tercihlerinizi yönetin</p></div>
+
+    <div class="settings-grid">
+        <!-- İşletme Bilgileri -->
+        <div class="card full">
+            <div class="card-header"><div class="card-icon green"><i class="fa-solid fa-building"></i></div><div><h3>İşletme Bilgileri</h3><span>Faturalarda görünecek bilgiler</span></div></div>
+            <form id="isletmeForm">
+                <div class="form-row">
+                    <div class="form-group"><label>İşletme Adı</label><input type="text" id="isletmeAdi" required></div>
+                    <div class="form-group"><label>E-posta</label><input type="email" id="isletmeEmail" disabled></div>
+                    <div class="form-group"><label>Telefon</label><input type="tel" id="isletmeTelefon" placeholder="05XX XXX XX XX"></div>
+                    <div class="form-group"><label>Adres</label><textarea id="isletmeAdres" rows="2" placeholder="İşletme adresi"></textarea></div>
+                </div>
+                <button type="submit" class="btn btn-save green">Kaydet</button>
+            </form>
+        </div>
+
+        <!-- Logo -->
+        <div class="card">
+            <div class="card-header"><div class="card-icon blue"><i class="fa-solid fa-image"></i></div><div><h3>Logo</h3><span>Fatura ve dashboard'da görünür</span></div></div>
+            <div class="logo-area">
+                <div class="logo-preview" id="logoPreview"><i class="fa-solid fa-building"></i></div>
+                <div class="logo-info">
+                    <p>PNG, JPG formatında logo yükleyin.</p>
+                    <input type="file" id="logoFile" accept="image/*" style="display:none;">
+                    <button type="button" class="btn btn-outline" onclick="document.getElementById('logoFile').click()"><i class="fa-solid fa-upload"></i> Logo Seç</button>
+                    <span class="logo-status" id="logoStatus"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fatura Tercihleri -->
+        <div class="card">
+            <div class="card-header"><div class="card-icon purple"><i class="fa-solid fa-file-invoice"></i></div><div><h3>Fatura Tercihleri</h3><span>Varsayılan fatura ayarları</span></div></div>
+            <div class="form-group"><label>Varsayılan KDV (%)</label><select id="varsayilanKDV"><option value="0">%0</option><option value="1">%1</option><option value="10">%10</option><option value="20" selected>%20</option></select></div>
+            <div class="form-group"><label>Varsayılan Para Birimi</label><select id="varsayilanParaBirimi"><option value="TRY">TRY</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option></select></div>
+            <div class="form-group"><label>Varsayılan Fatura Şablon Rengi</label>
+                <select id="varsayilanSablon">
+                    <option value="#10b981">Yeşil</option>
+                    <option value="#3b82f6">Mavi</option>
+                    <option value="#7c3aed">Mor</option>
+                    <option value="#f59e0b">Turuncu</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Kritik Stok Eşiği</label><input type="number" id="minStokEsik" value="5" min="1"></div>
+            <button type="button" class="btn btn-save" onclick="faturaAyarlariKaydet()">Kaydet</button>
+        </div>
+
+        <!-- Aktivite Log -->
+        <div class="card full">
+            <div class="card-header"><div class="card-icon orange"><i class="fa-solid fa-clock-rotate-left"></i></div><div><h3>Aktivite Logu</h3><span>Son işlemler</span></div></div>
+            <div class="log-list" id="aktiviteLog"><div style="text-align:center;padding:20px;color:#94a3b8;font-size:11px;">Yükleniyor...</div></div>
+        </div>
+
+        <!-- Tehlike Bölgesi -->
+        <div class="card full" style="border-color:#fecaca;">
+            <div class="card-header"><div class="card-icon red"><i class="fa-solid fa-triangle-exclamation"></i></div><div><h3 style="color:#ef4444;">Tehlike Bölgesi</h3><span>Hesabınızı ve tüm verilerinizi silin</span></div></div>
+            <p style="color:#64748b;font-size:12px;margin-bottom:12px;">Bu işlem geri alınamaz.</p>
+            <button type="button" class="btn btn-danger" onclick="hesapSil()"><i class="fa-solid fa-trash"></i> Hesabımı Sil</button>
+        </div>
+    </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, getDocs, query, where, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = { apiKey: "AIzaSyB2UDy6nNB966e_oiU46z1l_lgW4SChpFI", authDomain: "yonetim-f485e.firebaseapp.com", projectId: "yonetim-f485e", storageBucket: "yonetim-f485e.firebasestorage.app", messagingSenderId: "699827175577", appId: "1:699827175577:web:0806bd508a82e6cbeaf808" };
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let currentUser = null;
+
+window.toggleMenu = function() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open'); };
+function showToast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = `toast ${type}`; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 4000); }
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    currentUser = user;
+    const ds = await getDoc(doc(db, "isletmeler", user.uid));
+    if (ds.exists()) {
+        const d = ds.data();
+        document.getElementById('isletmeAdi').value = d.isletmeAdi || '';
+        document.getElementById('isletmeEmail').value = d.email || user.email;
+        document.getElementById('isletmeTelefon').value = d.telefon || '';
+        document.getElementById('isletmeAdres').value = d.adres || '';
+        if (d.logoURL) document.getElementById('logoPreview').innerHTML = `<img src="${d.logoURL}" alt="Logo">`;
+        if (d.varsayilanKDV) document.getElementById('varsayilanKDV').value = d.varsayilanKDV;
+        if (d.varsayilanParaBirimi) document.getElementById('varsayilanParaBirimi').value = d.varsayilanParaBirimi;
+        if (d.varsayilanSablon) document.getElementById('varsayilanSablon').value = d.varsayilanSablon;
+        if (d.minStokEsik) document.getElementById('minStokEsik').value = d.minStokEsik;
+    }
+    loadAktiviteLog();
+});
+
+async function loadAktiviteLog() {
+    const logDiv = document.getElementById('aktiviteLog');
+    try {
+        const [fSnap, mSnap, uSnap] = await Promise.all([
+            getDocs(query(collection(db, "faturalar"), where("isletmeId", "==", currentUser.uid), orderBy("createdAt", "desc"), limit(10))),
+            getDocs(query(collection(db, "musteriler"), where("isletmeId", "==", currentUser.uid), orderBy("createdAt", "desc"), limit(5))),
+            getDocs(query(collection(db, "urunler"), where("isletmeId", "==", currentUser.uid), orderBy("createdAt", "desc"), limit(5)))
+        ]);
+
+        const loglar = [];
+        fSnap.forEach(doc => { const f = doc.data(); loglar.push({ zaman: f.createdAt?.toDate() || new Date(), mesaj: `📋 Fatura ${f.faturaTipi==='proforma'?'proforma':f.faturaTipi==='irsaliye'?'irsaliye':'satış'} oluşturuldu: ${f.faturaNo} - ${f.musteriAdi}`, tip: 'fatura' }); });
+        mSnap.forEach(doc => { const m = doc.data(); loglar.push({ zaman: m.createdAt?.toDate() || new Date(), mesaj: `👤 Müşteri eklendi: ${m.adSoyad}`, tip: 'musteri' }); });
+        uSnap.forEach(doc => { const u = doc.data(); loglar.push({ zaman: u.createdAt?.toDate() || new Date(), mesaj: `📦 Ürün eklendi: ${u.urunAdi}`, tip: 'urun' }); });
+
+        loglar.sort((a,b) => b.zaman - a.zaman);
+        const son10 = loglar.slice(0, 10);
+
+        if (son10.length === 0) { logDiv.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;font-size:11px;">Henüz aktivite yok</div>'; return; }
+        logDiv.innerHTML = son10.map(l => `<div class="log-item"><span class="log-time">${l.zaman.toLocaleString('tr-TR')}</span><span>${l.mesaj}</span></div>`).join('');
+    } catch(e) { logDiv.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;font-size:11px;">Log yüklenemedi</div>'; }
+}
+
+document.getElementById('isletmeForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try { await updateDoc(doc(db, "isletmeler", currentUser.uid), { isletmeAdi: document.getElementById('isletmeAdi').value.trim(), telefon: document.getElementById('isletmeTelefon').value.trim(), adres: document.getElementById('isletmeAdres').value.trim(), updatedAt: serverTimestamp() }); showToast('Bilgiler güncellendi', 'success'); }
+    catch (err) { showToast('Hata: ' + err.message, 'error'); }
+});
+
+document.getElementById('logoFile').addEventListener('change', async function() {
+    const file = this.files[0]; if (!file) return;
+    const status = document.getElementById('logoStatus'); status.textContent = 'Yükleniyor...'; status.style.color = '#f59e0b';
+    try {
+        const fd = new FormData(); fd.append('image', file);
+        const res = await fetch('https://api.imgbb.com/1/upload?key=d52df232322c7c7faab56c9789c801e4', { method: 'POST', body: fd });
+        const result = await res.json();
+        if (result.success) { await updateDoc(doc(db, "isletmeler", currentUser.uid), { logoURL: result.data.url, updatedAt: serverTimestamp() }); document.getElementById('logoPreview').innerHTML = `<img src="${result.data.url}" alt="Logo">`; status.textContent = 'Logo yüklendi!'; status.style.color = '#10b981'; showToast('Logo güncellendi', 'success'); }
+    } catch (err) {
+        status.textContent = 'Hata! URL girin:'; status.style.color = '#ef4444';
+        const url = prompt('Logo URL\'sini manuel girin:');
+        if (url) { await updateDoc(doc(db, "isletmeler", currentUser.uid), { logoURL: url, updatedAt: serverTimestamp() }); document.getElementById('logoPreview').innerHTML = `<img src="${url}" alt="Logo">`; status.textContent = 'Logo kaydedildi'; status.style.color = '#10b981'; }
+    }
+});
+
+window.faturaAyarlariKaydet = async function() {
+    try { await updateDoc(doc(db, "isletmeler", currentUser.uid), { varsayilanKDV: parseInt(document.getElementById('varsayilanKDV').value), varsayilanParaBirimi: document.getElementById('varsayilanParaBirimi').value, varsayilanSablon: document.getElementById('varsayilanSablon').value, minStokEsik: parseInt(document.getElementById('minStokEsik').value)||5, updatedAt: serverTimestamp() }); showToast('Ayarlar kaydedildi', 'success'); }
+    catch (err) { showToast('Hata: ' + err.message, 'error'); }
+};
+
+window.hesapSil = async function() {
+    if (prompt('Tüm verilerinizi silmek için "SİL" yazın:') !== 'SİL') return showToast('İptal edildi', 'error');
+    try {
+        const uid = currentUser.uid;
+        for (const col of ['faturalar','musteriler','urunler','iadeler','ibanlar','gelir_gider','kasa_defteri','borc_alacak','calisanlar','stok_hareket','tekrarlayan_fatura']) {
+            const snap = await getDocs(query(collection(db, col), where("isletmeId", "==", uid)));
+            for (const d of snap.docs) await deleteDoc(d.ref);
+        }
+        await deleteDoc(doc(db, "isletmeler", uid));
+        await deleteUser(currentUser);
+        showToast('Hesap silindi', 'success');
+        setTimeout(() => window.location.href = 'register.html', 2000);
+    } catch (err) { showToast('Hata: ' + err.message, 'error'); }
+};
+
+window.cikisYap = async () => { await signOut(auth); window.location.href = 'login.html'; };
+</script>
+</body>
+</html>
