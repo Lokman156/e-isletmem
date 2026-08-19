@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nakit Akışı - E-İşletmem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color: #0f172a; display: flex; min-height: 100vh; }
+        .sidebar { width: 250px; background: #fff; border-right: 1px solid #e2e8f0; padding: 20px 14px; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; display: flex; flex-direction: column; transition: transform 0.3s; }
+        .sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 0 8px; margin-bottom: 28px; }
+        .sidebar-logo .s-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; }
+        .sidebar-logo h2 { font-size: 17px; font-weight: 800; }
+        .sidebar-logo span { color: #10b981; }
+        .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: #64748b; text-decoration: none; font-weight: 600; font-size: 12px; transition: all 0.2s; }
+        .sidebar-nav a:hover { background: #f1f5f9; color: #0f172a; }
+        .sidebar-nav a.active { background: #fefce8; color: #eab308; font-weight: 700; }
+        .sidebar-footer { border-top: 1px solid #e2e8f0; padding-top: 12px; }
+        .sidebar-footer button { width: 100%; padding: 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; color: #ef4444; font-weight: 600; font-size: 12px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .main { flex: 1; margin-left: 250px; padding: 20px 24px; }
+        .top-bar { margin-bottom: 20px; }
+        .top-bar h1 { font-size: 22px; font-weight: 800; }
+        .top-bar p { color: #64748b; font-size: 12px; margin-top: 2px; }
+        .summary-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .summary-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; text-align: center; }
+        .summary-card .lbl { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
+        .summary-card .val { font-size: 20px; font-weight: 800; }
+        .val.green { color: #10b981; }
+        .val.red { color: #ef4444; }
+        .val.blue { color: #3b82f6; }
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; margin-bottom: 16px; }
+        .card-header { margin-bottom: 14px; }
+        .card-header h3 { font-size: 14px; font-weight: 700; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { text-align: left; padding: 10px 12px; font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+        td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+        tr:hover td { background: #f8fafc; }
+        .giris { color: #10b981; font-weight: 700; }
+        .cikis { color: #ef4444; font-weight: 700; }
+        .bakiye-pozitif { color: #10b981; font-weight: 700; }
+        .bakiye-negatif { color: #ef4444; font-weight: 700; }
+        .empty { text-align: center; padding: 30px; color: #94a3b8; }
+        .empty i { font-size: 30px; margin-bottom: 8px; opacity: 0.5; }
+        .menu-btn { display: none; position: fixed; top: 12px; left: 12px; z-index: 200; width: 38px; height: 38px; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 16px; cursor: pointer; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; }
+        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); } .overlay.open { display: block; } .main { margin-left: 0; padding: 14px; } .menu-btn { display: flex; align-items: center; justify-content: center; } .summary-cards { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><div class="s-icon"><i class="fa-solid fa-shop"></i></div><h2>E-İşlet<span>mem</span></h2></div>
+    <nav class="sidebar-nav">
+        <a href="dashboard.html"><i class="fa-solid fa-grid-2"></i> Dashboard</a>
+        <a href="faturalar.html"><i class="fa-solid fa-receipt"></i> Faturalar</a>
+        <a href="musteriler.html"><i class="fa-solid fa-users"></i> Müşteriler</a>
+        <a href="urunler.html"><i class="fa-solid fa-box"></i> Ürünler</a>
+        <a href="iadeler.html"><i class="fa-solid fa-rotate-left"></i> İadeler</a>
+        <a href="stok-hareketleri.html"><i class="fa-solid fa-arrows-spin"></i> Stok Hareketleri</a>
+        <a href="musteri-yaslandirma.html"><i class="fa-solid fa-chart-pie"></i> Müşteri Yaşlandırma</a>
+        <a href="nakit-akisi.html" class="active"><i class="fa-solid fa-money-bill-trend-up"></i> Nakit Akışı</a>
+        <a href="butce-karsilastirma.html"><i class="fa-solid fa-scale-balanced"></i> Bütçe Karşılaştırma</a>
+        <a href="stok-degerleme.html"><i class="fa-solid fa-coins"></i> Stok Değerleme</a>
+        <a href="borc-alacak.html"><i class="fa-solid fa-scale-balanced"></i> Borç/Alacak</a>
+        <a href="kasa-defteri.html"><i class="fa-solid fa-cash-register"></i> Kasa Defteri</a>
+        <a href="tekrarlayan-fatura.html"><i class="fa-solid fa-rotate"></i> Tekrarlayan Fatura</a>
+        <a href="ibanlar.html"><i class="fa-solid fa-building-columns"></i> IBANlar</a>
+        <a href="gelir-gider.html"><i class="fa-solid fa-coins"></i> Gelir/Gider</a>
+        <a href="para-hareketleri.html"><i class="fa-solid fa-arrow-right-arrow-left"></i> Para Hareketleri</a>
+        <a href="calisanlar.html"><i class="fa-solid fa-user-tie"></i> Çalışanlar</a>
+        <a href="yedekleme.html"><i class="fa-solid fa-download"></i> Yedekleme</a>
+        <a href="kurlar.html"><i class="fa-solid fa-chart-line"></i> Canlı Kurlar</a>
+        <a href="ayarlar.html"><i class="fa-solid fa-gear"></i> Ayarlar</a>
+    </nav>
+    <div class="sidebar-footer"><button onclick="cikisYap()"><i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap</button></div>
+</aside>
+
+<main class="main">
+    <div class="top-bar"><h1>💰 Nakit Akış Tahmini</h1><p>Önümüzdeki 30 gün için beklenen giriş ve çıkışlar</p></div>
+
+    <div class="summary-cards">
+        <div class="summary-card"><div class="lbl">Beklenen Giriş</div><div class="val green" id="topGiris">₺0</div></div>
+        <div class="summary-card"><div class="lbl">Beklenen Çıkış</div><div class="val red" id="topCikis">₺0</div></div>
+        <div class="summary-card"><div class="lbl">Net Durum</div><div class="val blue" id="netDurum">₺0</div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><h3>📅 Günlük Nakit Akışı (30 Gün)</h3></div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Tarih</th><th>Giriş</th><th>Çıkış</th><th>Bakiye</th><th>Kaynak</th></tr></thead>
+                <tbody id="nakitBody"><tr><td colspan="5"><div class="empty"><i class="fa-solid fa-money-bill-trend-up"></i><p>Veri yok</p></div></td></tr></tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = { apiKey: "AIzaSyB2UDy6nNB966e_oiU46z1l_lgW4SChpFI", authDomain: "yonetim-f485e.firebaseapp.com", projectId: "yonetim-f485e", storageBucket: "yonetim-f485e.firebasestorage.app", messagingSenderId: "699827175577", appId: "1:699827175577:web:0806bd508a82e6cbeaf808" };
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let currentUser = null;
+
+window.toggleMenu = function() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open'); };
+
+onAuthStateChanged(auth, async (user) => { if (!user) { window.location.href = 'login.html'; return; } currentUser = user; await loadNakitAkisi(); });
+
+async function loadNakitAkisi() {
+    const now = new Date();
+    const otuzGun = new Date(now); otuzGun.setDate(now.getDate() + 30);
+    
+    const nakitAkisi = {};
+    for (let i = 0; i < 30; i++) {
+        const d = new Date(now); d.setDate(now.getDate() + i);
+        nakitAkisi[d.toLocaleDateString('tr-TR')] = { giris: 0, cikis: 0, kaynaklar: [] };
+    }
+
+    // Faturalardan beklenen girişler
+    const fSnap = await getDocs(query(collection(db, "faturalar"), where("isletmeId", "==", currentUser.uid)));
+    fSnap.forEach(doc => {
+        const f = doc.data();
+        if ((f.durum === 'gonderildi' || f.durum === 'taslak') && f.sonOdemeTarihi) {
+            const vade = f.sonOdemeTarihi.toDate();
+            if (vade >= now && vade <= otuzGun) {
+                const key = vade.toLocaleDateString('tr-TR');
+                if (nakitAkisi[key]) {
+                    nakitAkisi[key].giris += f.genelToplam || 0;
+                    nakitAkisi[key].kaynaklar.push(`${f.musteriAdi} (Fatura ${f.faturaNo})`);
+                }
+            }
+        }
+    });
+
+    // Borç/Alacak'tan beklenen çıkışlar
+    const bSnap = await getDocs(query(collection(db, "borc_alacak"), where("isletmeId", "==", currentUser.uid)));
+    bSnap.forEach(doc => {
+        const b = doc.data();
+        if (b.tur === 'borc' && b.durum !== 'odendi' && b.vadeTarihi) {
+            const vade = b.vadeTarihi.toDate();
+            if (vade >= now && vade <= otuzGun) {
+                const key = vade.toLocaleDateString('tr-TR');
+                if (nakitAkisi[key]) {
+                    nakitAkisi[key].cikis += b.tutar || 0;
+                    nakitAkisi[key].kaynaklar.push(`${b.musteriAdi} (Borç)`);
+                }
+            }
+        }
+    });
+
+    let toplamGiris = 0, toplamCikis = 0, kumulatif = 0;
+    const rows = [];
+
+    Object.entries(nakitAkisi).forEach(([tarih, v]) => {
+        if (v.giris > 0 || v.cikis > 0) {
+            toplamGiris += v.giris;
+            toplamCikis += v.cikis;
+            kumulatif += v.giris - v.cikis;
+            rows.push({ tarih, ...v, kumulatif });
+        }
+    });
+
+    document.getElementById('topGiris').textContent = '₺' + toplamGiris.toLocaleString('tr-TR');
+    document.getElementById('topCikis').textContent = '₺' + toplamCikis.toLocaleString('tr-TR');
+    document.getElementById('netDurum').textContent = '₺' + (toplamGiris - toplamCikis).toLocaleString('tr-TR');
+
+    const tbody = document.getElementById('nakitBody');
+    if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><i class="fa-solid fa-money-bill-trend-up"></i><p>30 gün içinde hareket beklenmiyor</p></div></td></tr>'; return; }
+
+    tbody.innerHTML = rows.map(r => {
+        const bakiyeClass = r.kumulatif >= 0 ? 'bakiye-pozitif' : 'bakiye-negatif';
+        return `<tr>
+            <td><strong>${r.tarih}</strong></td>
+            <td class="giris">₺${r.giris.toLocaleString('tr-TR')}</td>
+            <td class="cikis">₺${r.cikis.toLocaleString('tr-TR')}</td>
+            <td class="${bakiyeClass}">₺${r.kumulatif.toLocaleString('tr-TR')}</td>
+            <td style="font-size:10px;color:#64748b;">${r.kaynaklar.join(', ') || '-'}</td>
+        </tr>`;
+    }).join('');
+}
+
+window.cikisYap = async () => { await signOut(auth); window.location.href = 'login.html'; };
+</script>
+</body>
+</html>
