@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İşletmem - İşletme Yönetim Sistemi</title>
+    <title>Hesapflix - İşletme Yönetim Platformu</title>
+    <link rel="icon" href="https://i.ibb.co/JRjWw4px/Hesap-20261029-115905-0000.png">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: #fff;
@@ -16,24 +17,25 @@
             line-height: 1.6;
             overflow-x: hidden;
         }
+        /* Ortak logo stili - hem nav hem mobil menü için */
+        .logo {
+            display: flex; align-items: center; gap: 2px;
+            font-size: 20px; font-weight: 800; text-decoration: none; color: #0f172a;
+        }
+        .logo img {
+            width: 34px; height: 34px;
+            border-radius: 6px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+        .logo span { color: #10b981; }
+
         nav {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 16px 24px; background: #fff;
+            padding: 14px 24px; background: #fff;
             border-bottom: 1px solid #e2e8f0;
             position: sticky; top: 0; z-index: 100;
         }
-        nav .logo {
-            display: flex; align-items: center; gap: 8px;
-            font-size: 20px; font-weight: 800; text-decoration: none; color: #0f172a;
-        }
-        nav .logo .icon {
-            width: 36px; height: 36px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            color: #fff; font-size: 15px; flex-shrink: 0;
-        }
-        nav .logo span { color: #10b981; }
         nav .nav-links { display: flex; gap: 16px; align-items: center; }
         nav .nav-links a { text-decoration: none; color: #64748b; font-weight: 600; font-size: 13px; transition: color 0.2s; white-space: nowrap; }
         nav .nav-links a:hover { color: #0f172a; }
@@ -55,6 +57,7 @@
         .mobile-menu {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #fff; z-index: 200; flex-direction: column; padding: 20px;
+            overflow-y: auto;
         }
         .mobile-menu.open { display: flex; }
         .mobile-menu .m-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
@@ -112,6 +115,24 @@
         .ficon.amber { background: #fffbeb; color: #d97706; }
         .feature-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
         .feature-card p { font-size: 13px; color: #64748b; line-height: 1.6; }
+
+        .capabilities {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+            max-width: 1100px; margin: 0 auto;
+        }
+        .cap-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 14px 18px;
+            background: #fff; border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 13px; font-weight: 600;
+            transition: all 0.2s;
+        }
+        .cap-item:hover { border-color: #10b981; background: #f0fdf4; transform: translateX(3px); }
+        .cap-item i { color: #10b981; font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
+
         .cta {
             background: linear-gradient(135deg, #10b981, #059669);
             padding: 60px 24px; text-align: center; color: #fff;
@@ -156,7 +177,7 @@
         footer .footer-links a:hover { color: #10b981; }
         @media (max-width: 768px) {
             nav .nav-links a { display: none; }
-            nav .nav-links .btn-primary { display: inline-flex; }
+            nav .nav-links .btn-primary, nav .nav-links .btn-outline { display: inline-flex; }
             .hamburger { display: block; }
             .hero { padding: 50px 20px 40px; }
             .hero h1 { font-size: 30px; }
@@ -167,6 +188,7 @@
             section h2 { font-size: 24px; }
             .feature-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
             .feature-card { padding: 20px; }
+            .capabilities { grid-template-columns: 1fr; }
             .cta { padding: 40px 20px; }
             .cta h2 { font-size: 24px; }
         }
@@ -183,13 +205,13 @@
 
     <nav>
         <a href="index.html" class="logo">
-            <div class="icon"><i class="fa-solid fa-shop"></i></div>
-            İşlet<span>mem</span>
+            <img src="https://i.ibb.co/JRjWw4px/Hesap-20261029-115905-0000.png" alt="Hesapflix">Hesap<span>flix</span>
         </a>
         <div class="nav-links">
-            <a href="#ozellikler">Özellikler</a>
-            <a href="#nasil-calisir">Nasıl Çalışır?</a>
-            <a href="#sss">S.S.S.</a>
+            <a href="#ozellikler" onclick="navTo(event, 'ozellikler')">Özellikler</a>
+            <a href="#yetenekler" onclick="navTo(event, 'yetenekler')">Neler Yapabilirsin?</a>
+            <a href="#nasil-calisir" onclick="navTo(event, 'nasil-calisir')">Nasıl Çalışır?</a>
+            <a href="#sss" onclick="navTo(event, 'sss')">S.S.S.</a>
             <a href="login.html" class="btn btn-outline">Giriş</a>
             <a href="register.html" class="btn btn-primary">Ücretsiz Başla</a>
         </div>
@@ -199,15 +221,15 @@
     <div class="mobile-menu" id="mobileMenu">
         <div class="m-top">
             <a href="index.html" class="logo">
-                <div class="icon"><i class="fa-solid fa-shop"></i></div>
-                İşlet<span>mem</span>
+                <img src="https://i.ibb.co/JRjWw4px/Hesap-20261029-115905-0000.png" alt="Hesapflix">Hesap<span>flix</span>
             </a>
             <button class="hamburger" onclick="toggleMobileMenu()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="m-links">
-            <a href="#ozellikler" onclick="toggleMobileMenu()">Özellikler</a>
-            <a href="#nasil-calisir" onclick="toggleMobileMenu()">Nasıl Çalışır?</a>
-            <a href="#sss" onclick="toggleMobileMenu()">S.S.S.</a>
+            <a href="#ozellikler" onclick="navTo(event, 'ozellikler')">Özellikler</a>
+            <a href="#yetenekler" onclick="navTo(event, 'yetenekler')">Neler Yapabilirsin?</a>
+            <a href="#nasil-calisir" onclick="navTo(event, 'nasil-calisir')">Nasıl Çalışır?</a>
+            <a href="#sss" onclick="navTo(event, 'sss')">S.S.S.</a>
             <a href="login.html">Giriş Yap</a>
             <a href="register.html" class="btn btn-primary btn-lg" style="justify-content:center;">Ücretsiz Başla</a>
         </div>
@@ -219,7 +241,7 @@
         <p>Fatura oluştur, müşterilerini takip et, stoklarını yönet, gelir-gider dengesini gör. Hepsi tek panelde, üstelik ücretsiz.</p>
         <div class="btns">
             <a href="register.html" class="btn btn-primary btn-lg"><i class="fa-solid fa-rocket"></i> Hemen Başla</a>
-            <a href="#ozellikler" class="btn btn-light btn-lg">Tüm Özellikler <i class="fa-solid fa-arrow-down"></i></a>
+            <a href="login.html" class="btn btn-outline btn-lg"><i class="fa-solid fa-right-to-bracket"></i> Giriş Yap</a>
         </div>
         <div class="stats-row">
             <div class="stat-item"><div class="num"><i class="fa-solid fa-receipt"></i></div><div class="txt">Sınırsız Fatura</div></div>
@@ -231,7 +253,7 @@
 
     <section id="ozellikler">
         <h2>Neler Yapabilirsin?</h2>
-        <p class="sub">İşletmem ile işletmeni dijitale taşı, zamandan kazan</p>
+        <p class="sub">Hesapflix ile işletmeni dijitale taşı, zamandan kazan</p>
         <div class="feature-grid">
             <div class="feature-card">
                 <div class="ficon green"><i class="fa-solid fa-receipt"></i></div>
@@ -276,7 +298,60 @@
         </div>
     </section>
 
-    <section id="nasil-calisir" style="background:#f8fafc;">
+    <section id="yetenekler" style="background:#f8fafc;">
+        <h2>Hesapflix'te Neler Yapabilirsin?</h2>
+        <p class="sub">Kayıt olduktan sonra tek panelden yapabileceklerin</p>
+        <div class="capabilities">
+            <div class="cap-item"><i class="fa-solid fa-user-plus"></i> Hesap oluşturma</div>
+            <div class="cap-item"><i class="fa-solid fa-right-to-bracket"></i> Giriş yapma</div>
+            <div class="cap-item"><i class="fa-solid fa-building"></i> İşletme bilgisi girme</div>
+            <div class="cap-item"><i class="fa-solid fa-image"></i> Logo yükleme</div>
+            <div class="cap-item"><i class="fa-solid fa-users"></i> Müşteri ekleme</div>
+            <div class="cap-item"><i class="fa-solid fa-box"></i> Ürün ekleme</div>
+            <div class="cap-item"><i class="fa-solid fa-barcode"></i> Barkod oluşturma</div>
+            <div class="cap-item"><i class="fa-solid fa-warehouse"></i> Stok girişi</div>
+            <div class="cap-item"><i class="fa-solid fa-receipt"></i> Fatura kesme</div>
+            <div class="cap-item"><i class="fa-solid fa-file-signature"></i> Proforma hazırlama</div>
+            <div class="cap-item"><i class="fa-solid fa-truck"></i> İrsaliye düzenleme</div>
+            <div class="cap-item"><i class="fa-solid fa-rotate-left"></i> İade faturası kesme</div>
+            <div class="cap-item"><i class="fa-solid fa-percent"></i> KDV ekleme</div>
+            <div class="cap-item"><i class="fa-solid fa-credit-card"></i> Taksitlendirme</div>
+            <div class="cap-item"><i class="fa-solid fa-building-columns"></i> IBAN seçme</div>
+            <div class="cap-item"><i class="fa-solid fa-wallet"></i> Ödeme yöntemi seçme</div>
+            <div class="cap-item"><i class="fa-solid fa-file-pdf"></i> PDF indirme</div>
+            <div class="cap-item"><i class="fa-solid fa-print"></i> Fatura yazdırma</div>
+            <div class="cap-item"><i class="fa-solid fa-envelope"></i> Faturayı mail atma</div>
+            <div class="cap-item"><i class="fa-solid fa-list-check"></i> Toplu fatura işlemleri</div>
+            <div class="cap-item"><i class="fa-solid fa-chart-line"></i> Canlı kurları görme</div>
+            <div class="cap-item"><i class="fa-solid fa-calculator"></i> Kur çevirisi yapma</div>
+            <div class="cap-item"><i class="fa-solid fa-plus-circle"></i> Gelir ekleme</div>
+            <div class="cap-item"><i class="fa-solid fa-minus-circle"></i> Gider ekleme</div>
+            <div class="cap-item"><i class="fa-solid fa-cash-register"></i> Kasa hareketi ekleme</div>
+            <div class="cap-item"><i class="fa-solid fa-scale-balanced"></i> Borç ekleme</div>
+            <div class="cap-item"><i class="fa-solid fa-hand-holding-dollar"></i> Alacak ekleme</div>
+            <div class="cap-item"><i class="fa-solid fa-check-circle"></i> Ödendi işaretleme</div>
+            <div class="cap-item"><i class="fa-solid fa-rotate"></i> Tekrarlayan fatura tanımlama</div>
+            <div class="cap-item"><i class="fa-solid fa-bolt"></i> Tek tıkla fatura kesme</div>
+            <div class="cap-item"><i class="fa-solid fa-user-tie"></i> Çalışan ekleme</div>
+            <div class="cap-item"><i class="fa-solid fa-chart-pie"></i> Dashboard grafikleri görme</div>
+            <div class="cap-item"><i class="fa-solid fa-file-invoice-dollar"></i> Vergi özeti görme</div>
+            <div class="cap-item"><i class="fa-solid fa-trophy"></i> En çok kazandıran müşteriler</div>
+            <div class="cap-item"><i class="fa-solid fa-ranking-star"></i> En çok satılan ürünler</div>
+            <div class="cap-item"><i class="fa-solid fa-chart-column"></i> Müşteri yaşlandırma raporu</div>
+            <div class="cap-item"><i class="fa-solid fa-money-bill-trend-up"></i> Nakit akış tahmini</div>
+            <div class="cap-item"><i class="fa-solid fa-scale-balanced"></i> Bütçe karşılaştırma</div>
+            <div class="cap-item"><i class="fa-solid fa-coins"></i> Stok değerleme</div>
+            <div class="cap-item"><i class="fa-solid fa-arrows-spin"></i> Stok hareketleri</div>
+            <div class="cap-item"><i class="fa-solid fa-bell"></i> Ödeme hatırlatıcısı</div>
+            <div class="cap-item"><i class="fa-solid fa-triangle-exclamation"></i> Kritik stok uyarısı</div>
+            <div class="cap-item"><i class="fa-solid fa-bullhorn"></i> Duyuruları görme</div>
+            <div class="cap-item"><i class="fa-solid fa-download"></i> CSV dışa aktarma</div>
+            <div class="cap-item"><i class="fa-solid fa-gear"></i> Ayarları değiştirme</div>
+            <div class="cap-item"><i class="fa-solid fa-right-from-bracket"></i> Çıkış yapma</div>
+        </div>
+    </section>
+
+    <section id="nasil-calisir">
         <h2>Nasıl Çalışır?</h2>
         <p class="sub">3 adımda işletmeni yönetmeye başla</p>
         <div class="how-grid">
@@ -298,17 +373,17 @@
         </div>
     </section>
 
-    <section id="sss">
+    <section id="sss" style="background:#f8fafc;">
         <h2>Sıkça Sorulan Sorular</h2>
         <p class="sub">Merak ettiğin her şey burada</p>
         <div class="faq">
             <div class="faq-item">
                 <div class="faq-q" onclick="toggleFaq(this)">Gerçekten ücretsiz mi? <i class="fa-solid fa-chevron-down"></i></div>
-                <div class="faq-a">Evet, İşletmem tamamen ücretsizdir. Hiçbir özellik için ücret talep edilmez. Kredi kartı gerekmez.</div>
+                <div class="faq-a">Evet, Hesapflix tamamen ücretsizdir. Hiçbir özellik için ücret talep edilmez. Kredi kartı gerekmez.</div>
             </div>
             <div class="faq-item">
                 <div class="faq-q" onclick="toggleFaq(this)">Verilerim güvende mi? <i class="fa-solid fa-chevron-down"></i></div>
-                <div class="faq-a">Verileriniz Google Firebase altyapısında şifrelenmiş olarak saklanır. Sadece siz erişebilirsiniz.</div>
+                <div class="faq-a">Verileriniz yüksek güvenlikli sunucularda şifrelenmiş olarak saklanır. Sadece siz erişebilirsiniz.</div>
             </div>
             <div class="faq-item">
                 <div class="faq-q" onclick="toggleFaq(this)">Kaç fatura oluşturabilirim? <i class="fa-solid fa-chevron-down"></i></div>
@@ -320,7 +395,7 @@
             </div>
             <div class="faq-item">
                 <div class="faq-q" onclick="toggleFaq(this)">Telefondan kullanabilir miyim? <i class="fa-solid fa-chevron-down"></i></div>
-                <div class="faq-a">Kesinlikle! İşletmem tamamen mobil uyumludur. Telefon, tablet veya bilgisayardan sorunsuz kullanabilirsiniz.</div>
+                <div class="faq-a">Kesinlikle! Hesapflix tamamen mobil uyumludur. Telefon, tablet veya bilgisayardan sorunsuz kullanabilirsiniz.</div>
             </div>
             <div class="faq-item">
                 <div class="faq-q" onclick="toggleFaq(this)">e-Fatura desteği var mı? <i class="fa-solid fa-chevron-down"></i></div>
@@ -332,25 +407,45 @@
     <section class="cta">
         <h2>İşletmeni Büyütmeye Hazır mısın?</h2>
         <p>Ücretsiz hesabını oluştur, 2 dakikada fatura kesmeye başla.</p>
-        <a href="register.html" class="btn btn-light btn-lg"><i class="fa-solid fa-arrow-right"></i> Ücretsiz Kaydol</a>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+            <a href="register.html" class="btn btn-light btn-lg"><i class="fa-solid fa-arrow-right"></i> Ücretsiz Kaydol</a>
+            <a href="login.html" class="btn btn-light btn-lg"><i class="fa-solid fa-right-to-bracket"></i> Giriş Yap</a>
+        </div>
     </section>
 
     <footer>
         <div class="footer-links">
-            <a href="#ozellikler">Özellikler</a>
-            <a href="#nasil-calisir">Nasıl Çalışır?</a>
-            <a href="#sss">S.S.S.</a>
+            <a href="#ozellikler" onclick="navTo(event, 'ozellikler')">Özellikler</a>
+            <a href="#yetenekler" onclick="navTo(event, 'yetenekler')">Neler Yapabilirsin?</a>
+            <a href="#nasil-calisir" onclick="navTo(event, 'nasil-calisir')">Nasıl Çalışır?</a>
+            <a href="#sss" onclick="navTo(event, 'sss')">S.S.S.</a>
             <a href="login.html">Giriş Yap</a>
             <a href="register.html">Kaydol</a>
         </div>
-        <p>© 2026 İşletmem. Tüm hakları saklıdır. | isletmem.com.tr</p>
+        <p>© 2026 Hesapflix. Tüm hakları saklıdır. | Hesapflix.com</p>
     </footer>
 
     <script>
         function toggleMobileMenu() {
-            document.getElementById('mobileMenu').classList.toggle('open');
-            document.body.style.overflow = document.getElementById('mobileMenu').classList.contains('open') ? 'hidden' : '';
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('open');
+            document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
         }
+
+        function navTo(event, id) {
+            if (event) event.preventDefault();
+            const menu = document.getElementById('mobileMenu');
+            if (menu.classList.contains('open')) {
+                menu.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            const el = document.getElementById(id);
+            if (el) {
+                const y = el.getBoundingClientRect().top + window.pageYOffset - 70;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            }
+        }
+
         function toggleFaq(el) {
             el.parentElement.classList.toggle('open');
         }
