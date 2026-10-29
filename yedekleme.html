@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yedekleme - E-İşletmem</title>
+    <title>Yedekleme - Hesapflix</title>
+    <link rel="icon" href="https://i.ibb.co/JRjWw4px/Hesap-20261029-115905-0000.png">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -23,13 +24,14 @@
             z-index: 100; display: flex; flex-direction: column;
             transition: transform 0.3s;
         }
-        .sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 0 8px; margin-bottom: 28px; }
-        .sidebar-logo .s-icon {
+        .sidebar-logo { display: flex; align-items: center; gap: 6px; padding: 0 8px; margin-bottom: 28px; }
+        .sidebar-logo img {
             width: 36px; height: 36px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            color: #fff; font-size: 15px;
+            max-width: 36px; max-height: 36px;
+            object-fit: contain;
+            border-radius: 8px;
+            display: block;
+            flex-shrink: 0;
         }
         .sidebar-logo h2 { font-size: 17px; font-weight: 800; }
         .sidebar-logo span { color: #10b981; }
@@ -51,20 +53,20 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .main { flex: 1; margin-left: 250px; padding: 20px 24px; }
-        .top-bar { margin-bottom: 24px; }
+        .top-bar { margin-bottom: 20px; }
         .top-bar h1 { font-size: 22px; font-weight: 800; }
         .top-bar p { color: #64748b; font-size: 12px; margin-top: 2px; }
         .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
         .card {
             background: #fff; border: 1px solid #e2e8f0;
-            border-radius: 14px; padding: 22px;
+            border-radius: 14px; padding: 20px;
             transition: all 0.2s;
         }
         .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
         .card .c-icon {
-            width: 44px; height: 44px; border-radius: 12px;
+            width: 42px; height: 42px; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 20px; margin-bottom: 14px;
+            font-size: 18px; margin-bottom: 14px;
         }
         .c-icon.green { background: #ecfdf5; color: #10b981; }
         .c-icon.blue { background: #eff6ff; color: #3b82f6; }
@@ -116,8 +118,8 @@
 
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <div class="s-icon"><i class="fa-solid fa-shop"></i></div>
-            <h2>E-İşlet<span>mem</span></h2>
+            <img src="https://i.ibb.co/JRjWw4px/Hesap-20261029-115905-0000.png" alt="Hesapflix">
+            <h2>Hesap<span>flix</span></h2>
         </div>
         <nav class="sidebar-nav">
     <a href="dashboard.html"><i class="fa-solid fa-grid-2"></i> Dashboard</a>
