@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İadeler - E-İşletmem</title>
+    <title>İadeler - Hesapflix </title>
+    <link rel="icon" href="https://i.ibb.co/JRjWw4px/Hesap-20261029-115905-0000.png">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color: #0f172a; display: flex; min-height: 100vh; }
         .sidebar { width: 250px; background: #fff; border-right: 1px solid #e2e8f0; padding: 20px 14px; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; display: flex; flex-direction: column; transition: transform 0.3s; }
-        .sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 0 8px; margin-bottom: 28px; }
-        .sidebar-logo .s-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; }
+        .sidebar-logo { display: flex; align-items: center; gap: 6px; padding: 0 8px; margin-bottom: 28px; }
+        .sidebar-logo img { width: 36px; height: 36px; max-width: 36px; max-height: 36px; object-fit: contain; border-radius: 8px; display: block; flex-shrink: 0; }
         .sidebar-logo h2 { font-size: 17px; font-weight: 800; }
         .sidebar-logo span { color: #10b981; }
         .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; }
@@ -67,13 +68,21 @@
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
 <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo"><div class="s-icon"><i class="fa-solid fa-shop"></i></div><h2>E-İşlet<span>mem</span></h2></div>
+    <div class="sidebar-logo">
+        <img src="https://i.ibb.co/JRjWw4px/Hesap-20261029-115905-0000.png" alt="Hesapflix ">
+        <h2>Hesap<span>flix</span></h2>
+    </div>
     <nav class="sidebar-nav">
         <a href="dashboard.html"><i class="fa-solid fa-grid-2"></i> Dashboard</a>
         <a href="faturalar.html"><i class="fa-solid fa-receipt"></i> Faturalar</a>
         <a href="musteriler.html"><i class="fa-solid fa-users"></i> Müşteriler</a>
         <a href="urunler.html"><i class="fa-solid fa-box"></i> Ürünler</a>
         <a href="iadeler.html" class="active"><i class="fa-solid fa-rotate-left"></i> İadeler</a>
+        <a href="stok-hareketleri.html"><i class="fa-solid fa-arrows-spin"></i> Stok Hareketleri</a>
+        <a href="musteri-yaslandirma.html"><i class="fa-solid fa-chart-pie"></i> Müşteri Yaşlandırma</a>
+        <a href="nakit-akisi.html"><i class="fa-solid fa-money-bill-trend-up"></i> Nakit Akışı</a>
+        <a href="butce-karsilastirma.html"><i class="fa-solid fa-scale-balanced"></i> Bütçe Karşılaştırma</a>
+        <a href="stok-degerleme.html"><i class="fa-solid fa-coins"></i> Stok Değerleme</a>
         <a href="borc-alacak.html"><i class="fa-solid fa-scale-balanced"></i> Borç/Alacak</a>
         <a href="kasa-defteri.html"><i class="fa-solid fa-cash-register"></i> Kasa Defteri</a>
         <a href="tekrarlayan-fatura.html"><i class="fa-solid fa-rotate"></i> Tekrarlayan Fatura</a>
