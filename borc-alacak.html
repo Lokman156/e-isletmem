@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Borç/Alacak - E-İşletmem</title>
+    <title>Borç/Alacak - Hesapflix</title>
+    <link rel="icon" href="https://i.ibb.co/JRjWw4px/Hesap-20261029-115905-0000.png">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -23,13 +24,14 @@
             z-index: 100; display: flex; flex-direction: column;
             transition: transform 0.3s;
         }
-        .sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 0 8px; margin-bottom: 28px; }
-        .sidebar-logo .s-icon {
+        .sidebar-logo { display: flex; align-items: center; gap: 6px; padding: 0 8px; margin-bottom: 28px; }
+        .sidebar-logo img {
             width: 36px; height: 36px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            color: #fff; font-size: 15px;
+            max-width: 36px; max-height: 36px;
+            object-fit: contain;
+            border-radius: 8px;
+            display: block;
+            flex-shrink: 0;
         }
         .sidebar-logo h2 { font-size: 17px; font-weight: 800; }
         .sidebar-logo span { color: #10b981; }
@@ -158,8 +160,8 @@
 
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <div class="s-icon"><i class="fa-solid fa-shop"></i></div>
-            <h2>E-İşlet<span>mem</span></h2>
+            <img src="https://i.ibb.co/JRjWw4px/Hesap-20261029-115905-0000.png" alt="Hesapix">
+            <h2>Hesap<span>flix</span></h2>
         </div>
         <nav class="sidebar-nav">
     <a href="dashboard.html"><i class="fa-solid fa-grid-2"></i> Dashboard</a>
