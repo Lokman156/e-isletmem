@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - E-İşletmem</title>
+    <title>Dashboard - Hesapflix</title>
+    <link rel="icon" href="https://i.ibb.co/JRjWw4px/Hesap-20261029-115905-0000.png">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -11,8 +12,8 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color: #0f172a; display: flex; min-height: 100vh; }
         .sidebar { width: 250px; background: #fff; border-right: 1px solid #e2e8f0; padding: 20px 14px; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; display: flex; flex-direction: column; transition: transform 0.3s; }
-        .sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 0 8px; margin-bottom: 28px; }
-        .sidebar-logo .s-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; }
+        .sidebar-logo { display: flex; align-items: center; gap: 6px; padding: 0 8px; margin-bottom: 28px; }
+        .sidebar-logo img { width: 36px; height: 36px; max-width: 36px; max-height: 36px; object-fit: contain; border-radius: 8px; display: block; flex-shrink: 0; }
         .sidebar-logo h2 { font-size: 17px; font-weight: 800; }
         .sidebar-logo span { color: #10b981; }
         .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; }
@@ -26,7 +27,8 @@
         .top-bar h1 { font-size: 22px; font-weight: 800; }
         .welcome { color: #64748b; font-size: 12px; margin-top: 2px; }
         .user-badge { display: flex; align-items: center; gap: 8px; background: #fff; padding: 8px 14px; border-radius: 12px; border: 1px solid #e2e8f0; }
-        .user-badge .avatar { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #3b82f6, #6366f1); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 12px; }
+        .user-badge .avatar { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #3b82f6, #6366f1); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 12px; overflow: hidden; flex-shrink: 0; }
+        .user-badge .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .user-badge .info span { display: block; font-weight: 600; font-size: 11px; }
         .user-badge .info small { color: #94a3b8; font-size: 10px; }
         .alert-card { border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; }
@@ -81,7 +83,10 @@
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
 <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo"><div class="s-icon"><i class="fa-solid fa-shop"></i></div><h2>E-İşlet<span>mem</span></h2></div>
+    <div class="sidebar-logo">
+        <img src="https://i.ibb.co/JRjWw4px/Hesap-20261029-115905-0000.png" alt="Hesapflix">
+        <h2>Hesap<span>flix</span></h2>
+    </div>
     <nav class="sidebar-nav">
         <a href="dashboard.html" class="active"><i class="fa-solid fa-grid-2"></i> Dashboard</a>
         <a href="faturalar.html"><i class="fa-solid fa-receipt"></i> Faturalar</a>
@@ -109,7 +114,7 @@
 
 <main class="main">
     <div class="top-bar"><div><h1>Dashboard</h1><p class="welcome" id="welcomeMsg">Yükleniyor...</p></div>
-        <div class="user-badge"><div class="avatar" id="userInitial">-</div><div class="info"><span id="isletmeAdiTop">-</span><small>E-İşletmem</small></div></div>
+        <div class="user-badge"><div class="avatar" id="userInitial">-</div><div class="info"><span id="isletmeAdiTop">-</span><small>Hesapflix</small></div></div>
     </div>
 
     <div class="alert-card alert-info" id="duyuruSlider" style="display:none;">
@@ -194,9 +199,17 @@ window.toggleMenu = function() { document.getElementById('sidebar').classList.to
 onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.href = 'login.html'; return; }
     currentUser = user;
-    document.getElementById('userInitial').textContent = user.email.charAt(0).toUpperCase();
+    const initialAvatar = document.getElementById('userInitial');
+    initialAvatar.textContent = user.email.charAt(0).toUpperCase();
     const ds = await getDoc(doc(db, "isletmeler", user.uid));
-    if (ds.exists()) { const d = ds.data(); document.getElementById('isletmeAdiTop').textContent = d.isletmeAdi; document.getElementById('welcomeMsg').textContent = `Hoş geldin, ${d.isletmeAdi}`; }
+    if (ds.exists()) {
+        const d = ds.data();
+        document.getElementById('isletmeAdiTop').textContent = d.isletmeAdi;
+        document.getElementById('welcomeMsg').textContent = `Hoş geldin, ${d.isletmeAdi}`;
+        if (d.logoURL) {
+            initialAvatar.innerHTML = `<img src="${d.logoURL}" alt="Logo">`;
+        }
+    }
     await loadDuyurular();
     await loadDashboard(user.uid);
 });
